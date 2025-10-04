@@ -19,6 +19,10 @@ const router = createRouter({
       name: 'about',
       component: () => import('../views/AboutView.vue'),
     },
+    // todo add video presentation
+    // todo pre wedding photo
+    // todo seat plan
+    // todo link for RSVP
   ],
 })
 
