@@ -1,0 +1,8 @@
+{
+  "name": "snpalways",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
