@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "dependencies": {
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.6"
   }
 }
