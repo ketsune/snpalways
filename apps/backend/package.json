@@ -8,10 +8,13 @@
     "start": "NODE_ENV=production ./dist/server"
   },
   "dependencies": {
+    "@effect/sql-pg": "^0.47.0",
+    "drizzle-orm": "^0.44.6",
     "elysia": "latest"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "drizzle-kit": "^0.31.5"
   },
   "module": "src/index.js"
 }
