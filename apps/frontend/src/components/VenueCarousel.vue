@@ -58,12 +58,14 @@ onUnmounted(() => {
 let startX = 0
 let startY = 0
 function onTouchStart(e: TouchEvent) {
-  const t = e.touches[0]
+  const t = e.touches?.[0]
+  if (!t) return
   startX = t.clientX
   startY = t.clientY
 }
 function onTouchEnd(e: TouchEvent) {
-  const t = e.changedTouches[0]
+  const t = e.changedTouches?.[0]
+  if (!t) return
   const dx = t.clientX - startX
   const dy = t.clientY - startY
   if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
