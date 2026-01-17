@@ -8,6 +8,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
+  root: fileURLToPath(new URL('./', import.meta.url)),
   plugins: [
     vue(),
     vueJsx(),

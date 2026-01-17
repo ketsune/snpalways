@@ -5,6 +5,9 @@
     "apps/*",
     "packages/*"
   ],
+  "scripts": {
+    "build:frontend": "cd apps/frontend && npm run build"
+  },
   "dependencies": {
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6"
