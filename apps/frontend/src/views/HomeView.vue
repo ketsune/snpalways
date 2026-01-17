@@ -29,12 +29,14 @@ const venueImages = [
         <p class="mt-4 text-base sm:text-lg text-gray-600">Saturday, May 30, 2026 · 3:00 PM</p>
         <p class="text-base sm:text-lg text-gray-600">Ray Venue, Nonthaburi</p>
         <div class="mt-8 flex items-center justify-center gap-3">
-          <RouterLink
-            to="/rsvp"
+          <a
+            href="https://forms.gle/e1WGCZBAHVRLV5cA7"
+            target="_blank"
+            rel="noopener noreferrer"
             class="inline-flex items-center rounded-full bg-rose-600 px-6 py-3 text-white shadow hover:bg-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
           >
             RSVP
-          </RouterLink>
+          </a>
           <a
             href="#details"
             class="inline-flex items-center rounded-full border border-rose-200 px-6 py-3 text-rose-700 hover:bg-rose-50"
