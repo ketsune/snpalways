@@ -1,5 +1,11 @@
 @import "tailwindcss";
 @import './base.css';
 
+@theme {
+  --color-main-orange: #F7591F;
+  --color-main-orange-red: #E34234;
+  --color-main-pink: #FFACB7;
+}
+
 @source "./index.html";
 @source "./src/**/*.{vue,js,ts,jsx,tsx}";

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import orangeGardenVideo from '@/assets/orange_garden.mov'
 
 const isAnimated = ref(false)
 const isPhotoAnimated = ref(false)
@@ -59,17 +60,33 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section ref="sectionRef" class="flex flex-col items-center justify-center relative">
+  <section
+    ref="sectionRef"
+    class="flex flex-col items-center justify-center relative min-h-screen bg-transparent"
+  >
+    <video autoplay loop muted playsinline class="section-video">
+      <source :src="orangeGardenVideo" type="video/quicktime" />
+      <source :src="orangeGardenVideo" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+    <div class="glass-overlay"></div>
     <div class="envelope-container" :class="{ 'is-animated': isAnimated }">
       <div class="lid one"></div>
       <div class="lid two"></div>
       <div class="envelope"></div>
       <div class="letter">
-        <p>Hello</p>
+        <p>
+          You're invited to
+          Kaywalee & Supanat
+          Wedding ceremony
+        </p>
       </div>
     </div>
 
-    <div ref="photoSectionRef" class="flex flex-col items-center justify-center relative w-full">
+    <div
+      ref="photoSectionRef"
+      class="flex flex-col items-center justify-center relative w-full z-10"
+    >
       <div class="blocks-container w-full max-w-2xl px-4 mt-12 flex flex-col gap-8">
         <div
           v-for="block in blocks"
@@ -84,7 +101,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <div class="mt-12">
+      <div class="mt-12 mb-12">
         <RouterLink class="text-gray-600 hover:text-gray-900" to="/home">
           <button
             class="cursor-pointer px-6 py-2 bg-rose-500 text-white rounded-full hover:bg-rose-600 transition-colors"
@@ -99,14 +116,38 @@ onUnmounted(() => {
 
 <style scoped>
 .envelope-container {
-  margin-top: 7rem;
+  margin-top: 12rem;
   height: 200px;
   width: 300px;
-  background-color: #3760c9;
+  background-color: rgba(196, 223, 240);
   position: relative;
   display: flex;
   justify-content: center;
+  z-index: 10;
+}
+
+.section-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   z-index: 0;
+  pointer-events: none;
+}
+
+.glass-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .lid {
@@ -124,7 +165,7 @@ onUnmounted(() => {
 
 /* Lid when closed */
 .lid.one {
-  border-top: 100px solid #658ced;
+  border-top: 100px solid rgba(101, 140, 237);
   transform: rotateX(0deg);
   z-index: 3;
   transition-delay: 0.1s;
@@ -132,7 +173,7 @@ onUnmounted(() => {
 
 /* Lid when opened */
 .lid.two {
-  border-top: 100px solid #3760c9;
+  border-top: 100px solid rgba(55, 96, 201);
   transform: rotateX(90deg);
   z-index: 1;
   transition-delay: 0.05s;
@@ -145,9 +186,9 @@ onUnmounted(() => {
   top: 0;
   left: 0;
   border-top: 100px solid transparent;
-  border-right: 150px solid #c4dff0;
-  border-bottom: 100px solid #c4dff0;
-  border-left: 150px solid #a4d4f2;
+  border-right: 150px solid rgba(196, 223, 240);
+  border-bottom: 100px solid rgba(196, 223, 240);
+  border-left: 150px solid rgba(164, 212, 242);
   z-index: 3;
 }
 
@@ -180,7 +221,7 @@ onUnmounted(() => {
 }
 
 .envelope-container.is-animated .letter {
-  transform: translateY(-50px);
+  transform: translateY(-150px);
   transition-delay: 0.2s;
 }
 
