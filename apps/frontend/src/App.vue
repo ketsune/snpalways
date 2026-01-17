@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { computed } from 'vue'
+
+const route = useRoute()
+const showHeader = computed(() => route.name !== 'landing')
 </script>
 
 <template>
   <div class="min-h-screen bg-white text-gray-800">
     <!-- Site Header -->
-    <header class="flex justify-center border-b border-gray-100">
+    <header v-if="showHeader" class="flex justify-center border-b border-gray-100">
       <div class="flex w-full max-w-5xl items-center justify-between px-4 py-4">
         <RouterLink to="/" class="font-serif text-xl text-gray-900">Som & Pann</RouterLink>
         <nav class="flex gap-4 text-sm">
