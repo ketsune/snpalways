@@ -2,6 +2,10 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import orangeGardenVideo from '@/assets/orange_garden.mov'
+import landingPhoto1 from '@/assets/landing-photo-1.JPG'
+import landingPhoto2 from '@/assets/landing-photo-2.JPG'
+import landingPhoto3 from '@/assets/landing-photo-3.JPG'
+import landingPhoto4 from '@/assets/landing-photo-4.JPG'
 
 const isAnimated = ref(false)
 const isPhotoAnimated = ref(false)
@@ -9,10 +13,10 @@ const sectionRef = ref<HTMLElement | null>(null)
 const photoSectionRef = ref<HTMLElement | null>(null)
 
 const blocks = [
-  { id: 1, side: 'left', text: 'Photo 1' },
-  { id: 2, side: 'right', text: 'Photo 2' },
-  { id: 3, side: 'left', text: 'Photo 3' },
-  { id: 4, side: 'right', text: 'Photo 4' },
+  { id: 1, side: 'left', text: 'Photo 1', src: landingPhoto1 },
+  { id: 2, side: 'right', text: 'Photo 2', src: landingPhoto2 },
+  { id: 3, side: 'left', text: 'Photo 3', src: landingPhoto3 },
+  { id: 4, side: 'right', text: 'Photo 4', src: landingPhoto4 },
 ]
 
 let observer: IntersectionObserver | null = null
@@ -37,7 +41,7 @@ onMounted(() => {
       })
     },
     {
-      threshold: 0.25,
+      threshold: 0.2,
     },
   )
 
@@ -74,34 +78,34 @@ onUnmounted(() => {
       <div class="lid one"></div>
       <div class="lid two"></div>
       <div class="envelope"></div>
-      <div class="letter">
-        <p>
-          You're invited to
-          Kaywalee & Supanat
-          Wedding ceremony
-        </p>
+      <div class="p-4 letter font-corinthia font-bold text-3xl">
+        <h2 class="text-[2.5rem]">“You’re Invited!”</h2>
+        <h1 class="text-[4rem]">Kaywalee & Supanat</h1>
+        <h2>We are getting married!</h2>
+        <p>30 May 2026 @ Ray Venue,</p>
+        <p>We can’t wait to share this special day with you.</p>
       </div>
     </div>
 
     <div
       ref="photoSectionRef"
-      class="flex flex-col items-center justify-center relative w-full z-10"
+      class="flex flex-col items-center justify-center relative w-full z-10 mt-8"
     >
-      <div class="blocks-container w-full max-w-2xl px-4 mt-12 flex flex-col gap-8">
+      <div class="blocks-container w-full max-w-2xl px-4 flex flex-col gap-8">
         <div
           v-for="block in blocks"
           :key="block.id"
-          class="photo-block w-64 h-40 bg-gray-200 rounded-lg shadow-md flex items-center justify-center"
+          class="photo-block w-96 h-[-66rem] flex items-center justify-center border-[1rem] border-white rounded-lg bg-white"
           :class="[
             block.side === 'left' ? 'slide-left self-start' : 'slide-right self-end',
             { 'is-visible': isPhotoAnimated },
           ]"
         >
-          <span class="text-gray-500">{{ block.text }}</span>
+          <img class="rounded-lg" :src="block.src" alt="Som & Pann" />
         </div>
       </div>
 
-      <div class="mt-12 mb-12">
+      <div class="mt-8 mb-8">
         <RouterLink class="text-gray-600 hover:text-gray-900" to="/home">
           <button
             class="cursor-pointer px-6 py-2 bg-rose-500 text-white rounded-full hover:bg-rose-600 transition-colors"
@@ -116,9 +120,9 @@ onUnmounted(() => {
 
 <style scoped>
 .envelope-container {
-  margin-top: 12rem;
-  height: 200px;
-  width: 300px;
+  margin-top: 16rem;
+  height: 20rem;
+  width: 36rem;
   background-color: rgba(196, 223, 240);
   position: relative;
   display: flex;
@@ -156,27 +160,27 @@ onUnmounted(() => {
   width: 100%;
   top: 0;
   left: 0;
-  border-right: 150px solid transparent;
-  border-bottom: 100px solid transparent;
-  border-left: 150px solid transparent;
+  border-right: 18rem solid transparent;
+  border-bottom: 10rem solid transparent;
+  border-left: 18rem solid transparent;
   transform-origin: top;
   transition: transform 0.25s linear;
 }
 
 /* Lid when closed */
 .lid.one {
-  border-top: 100px solid rgba(101, 140, 237);
+  border-top: 10rem solid rgba(101, 140, 237);
   transform: rotateX(0deg);
   z-index: 3;
-  transition-delay: 0.1s;
+  transition-delay: 0.2s;
 }
 
 /* Lid when opened */
 .lid.two {
-  border-top: 100px solid rgba(55, 96, 201);
+  border-top: 10rem solid rgba(55, 96, 201);
   transform: rotateX(90deg);
   z-index: 1;
-  transition-delay: 0.05s;
+  transition-delay: 0.1s;
 }
 
 .envelope {
@@ -185,10 +189,10 @@ onUnmounted(() => {
   width: 100%;
   top: 0;
   left: 0;
-  border-top: 100px solid transparent;
-  border-right: 150px solid rgba(196, 223, 240);
-  border-bottom: 100px solid rgba(196, 223, 240);
-  border-left: 150px solid rgba(164, 212, 242);
+  border-top: 10rem solid transparent;
+  border-right: 18rem solid rgba(196, 223, 240);
+  border-bottom: 10rem solid rgba(196, 223, 240);
+  border-left: 18rem solid rgba(164, 212, 242);
   z-index: 3;
 }
 
@@ -200,29 +204,27 @@ onUnmounted(() => {
   background-color: white;
   border-radius: 15px;
   z-index: 2;
-  transition: 0.2s;
+  transition: 0.5s;
 }
 
-.letter p {
+.letter > * {
   text-align: center;
-  font-size: 30px;
-  margin-top: 30px;
   color: #3b4049;
 }
 
 .envelope-container.is-animated .lid.one {
   transform: rotateX(90deg);
-  transition-delay: 0s;
+  transition-delay: 0.1s;
 }
 
 .envelope-container.is-animated .lid.two {
   transform: rotateX(180deg);
-  transition-delay: 0.1s;
+  transition-delay: 0.45s;
 }
 
 .envelope-container.is-animated .letter {
-  transform: translateY(-150px);
-  transition-delay: 0.2s;
+  transform: translateY(-12rem);
+  transition-delay: 0.8s;
 }
 
 /* Photo Blocks Animation */

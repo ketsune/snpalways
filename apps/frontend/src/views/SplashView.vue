@@ -76,22 +76,22 @@ import EnvelopeAnimation from '@/components/EnvelopeAnimation.vue'
             Join us in celebrating our special day
           </p>
         </div>
+      </div>
 
-        <div class="animate-bounce mt-12 relative z-10">
-          <svg
-            class="w-6 h-6 text-gray-400 mx-auto"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-            ></path>
-          </svg>
-        </div>
+      <div class="animate-bounce mt-16 relative z-10">
+        <svg
+          class="w-6 h-6 text-gray-400 mx-auto"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 14l-7 7m0 0l-7-7m7 7V3"
+          ></path>
+        </svg>
       </div>
     </section>
 
