@@ -6,7 +6,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build:frontend": "bun run --cwd apps/frontend build"
+    "build:frontend": "bun run --cwd apps/frontend build",
+    "dev:frontend": "bun run --cwd apps/frontend dev"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
