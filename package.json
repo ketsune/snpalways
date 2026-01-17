@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build:frontend": "cd apps/frontend && npm run build"
+    "build:frontend": "bun run --cwd apps/frontend build"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
