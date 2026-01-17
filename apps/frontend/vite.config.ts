@@ -12,8 +12,8 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     vue(),
     vueJsx(),
-    mode === 'development' && vueDevTools(),
     tailwindcss(),
+    mode === 'development' && vueDevTools(),
   ],
   resolve: {
     alias: {
