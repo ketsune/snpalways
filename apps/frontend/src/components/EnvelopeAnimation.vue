@@ -123,7 +123,7 @@ onUnmounted(() => {
   margin-top: 16rem;
   height: 20rem;
   width: 36rem;
-  background-color: rgba(196, 223, 240);
+  background-color: var(--color-main-green-lighter);
   position: relative;
   display: flex;
   justify-content: center;
@@ -169,7 +169,7 @@ onUnmounted(() => {
 
 /* Lid when closed */
 .lid.one {
-  border-top: 10rem solid rgba(101, 140, 237);
+  border-top: 10rem solid var(--color-main-green-darker);
   transform: rotateX(0deg);
   z-index: 3;
   transition-delay: 0.2s;
@@ -177,7 +177,7 @@ onUnmounted(() => {
 
 /* Lid when opened */
 .lid.two {
-  border-top: 10rem solid rgba(55, 96, 201);
+  border-top: 10rem solid var(--color-main-green-darker);
   transform: rotateX(90deg);
   z-index: 1;
   transition-delay: 0.1s;
@@ -190,9 +190,9 @@ onUnmounted(() => {
   top: 0;
   left: 0;
   border-top: 10rem solid transparent;
-  border-right: 18rem solid rgba(196, 223, 240);
-  border-bottom: 10rem solid rgba(196, 223, 240);
-  border-left: 18rem solid rgba(164, 212, 242);
+  border-right: 18rem solid var(--color-main-green-lighter);
+  border-bottom: 10rem solid var(--color-main-green-lighter);
+  border-left: 18rem solid var(--color-main-green);
   z-index: 3;
 }
 
@@ -233,14 +233,6 @@ onUnmounted(() => {
     transform 0.4s ease-out,
     opacity 0.4s ease-out;
   opacity: 0;
-}
-
-.slide-left {
-  transform: translateX(-100px);
-}
-
-.slide-right {
-  transform: translateX(100px);
 }
 
 .photo-block.is-visible {
