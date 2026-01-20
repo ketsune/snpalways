@@ -49,7 +49,7 @@ import EnvelopeAnimation from '@/components/EnvelopeAnimation.vue'
 }
 
 .brush-container:before {
-  @apply translate-x-[50%] md:translate-0;
+  @apply translate-x-[50%];
 
   content: '';
   display: inline-block;
@@ -72,6 +72,12 @@ import EnvelopeAnimation from '@/components/EnvelopeAnimation.vue'
   left: 0;
   position: absolute;
   animation: float 30s ease-in-out infinite;
+}
+
+@media (width >= 48rem) {
+  .brush-container:before {
+    @apply translate-0;
+  }
 }
 
 @keyframes float {
