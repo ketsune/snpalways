@@ -158,7 +158,7 @@ onUnmounted(() => {
 }
 
 .lid {
-  @apply border-transparent border-x-[12.25rem] md:border-x-[18rem] border-b-[10rem] md:border-b-[10rem];
+  @apply border-transparent border-x-[12.25rem] border-b-[10rem];
 
   position: absolute;
   height: 100%;
@@ -185,20 +185,24 @@ onUnmounted(() => {
   transition-delay: 0.1s;
 }
 .envelope {
-  @apply border-solid
-  border-t-transparent border-r-[#ffe1d8] border-b-[#ffe1d8] border-l-[#FFF2DE]
-  border-x-[12.25rem] md:border-x-[18rem] border-y-[10rem] md:border-y-[10rem];
+  @apply border-solid border-t-transparent border-r-[#ffe1d8] border-b-[#ffe1d8] border-l-[#FFF2DE] border-x-[12.25rem] border-y-[10rem];
 
   position: absolute;
   height: 100%;
   width: 100%;
   top: 0;
   left: 0;
-  //border-top: 10rem solid transparent;
-  //border-right: 18rem solid var(--color-main-green-lighter);
-  //border-bottom: 10rem solid var(--color-main-green-lighter);
-  //border-left: 18rem solid var(--color-main-green);
   z-index: 3;
+}
+
+@media (width >= 48rem) {
+  .envelope {
+    @apply border-solid border-t-transparent border-r-[#ffe1d8] border-b-[#ffe1d8] border-l-[#FFF2DE] border-x-[18rem] border-y-[10rem];
+  }
+
+  .lid {
+    @apply border-transparent border-x-[18rem] border-b-[10rem];
+  }
 }
 
 .letter {
