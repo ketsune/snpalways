@@ -10,8 +10,8 @@ import EnvelopeAnimation from '@/components/EnvelopeAnimation.vue'
     >
       <div class="relative z-10 min-w-[50rem] brush-container">
         <div class="relative z-10 font-fluer-de-leah wedding-container">
-          <h1 class="text-6xl md:text-8xl mb-6">Our Wedding</h1>
-          <p class="text-4xl md:text-6xl text-gray-600 mb-8 font-light">
+          <h1 class="text-4xl md:text-8xl mb-6">Our Wedding</h1>
+          <p class="text-2xl md:text-6xl text-gray-600 mb-8 font-light">
             Join us in celebrating our special day
           </p>
         </div>
@@ -42,11 +42,15 @@ import EnvelopeAnimation from '@/components/EnvelopeAnimation.vue'
 </template>
 
 <style scoped>
+@reference "tailwindcss";
+
 .wedding-container {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .brush-container:before {
+  @apply translate-x-[50%] md:translate-0;
+
   content: '';
   display: inline-block;
   background-image: linear-gradient(
@@ -56,16 +60,17 @@ import EnvelopeAnimation from '@/components/EnvelopeAnimation.vue'
   );
   -webkit-mask-image: url('@/assets/brush-bg.png');
   mask-image: url('@/assets/brush-bg.png');
-  -webkit-mask-size: auto;
-  mask-size: auto;
+  //-webkit-mask-size: contain;
+  mask-size: 100%, contain;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   opacity: 0.45;
-  min-width: 50rem;
+  width: 100vw;
+  max-width: 50rem;
   height: 20rem;
   z-index: 0;
-  position: absolute;
   left: 0;
+  position: absolute;
   animation: float 30s ease-in-out infinite;
 }
 

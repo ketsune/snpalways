@@ -78,9 +78,9 @@ onUnmounted(() => {
       <div class="lid one"></div>
       <div class="lid two"></div>
       <div class="envelope"></div>
-      <div class="p-4 letter font-corinthia font-bold text-3xl">
-        <h2 class="text-[2.5rem]">“You’re Invited!”</h2>
-        <h1 class="text-[4rem]">Kaywalee & Supanat</h1>
+      <div class="p-4 letter font-corinthia font-bold text-2xl md:text-3xl">
+        <h2 class="text-3xl md:text-4xl">“You’re Invited!”</h2>
+        <h1 class="text-6xl md:text-7xl">Kaywalee & Supanat</h1>
         <h2>We are getting married!</h2>
         <p>30 May 2026 @ Ray Venue,</p>
         <p>We can’t wait to share this special day with you.</p>
@@ -119,11 +119,14 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+@reference "tailwindcss";
+
 .envelope-container {
   margin-top: 16rem;
   height: 20rem;
   width: 36rem;
-  background-color: var(--color-main-green-lighter);
+  max-width: 95vw;
+  background-color: #ffc1cc;
   position: relative;
   display: flex;
   justify-content: center;
@@ -155,21 +158,20 @@ onUnmounted(() => {
 }
 
 .lid {
+  @apply border-transparent border-x-[12.25rem] md:border-x-[18rem] border-b-[10rem] md:border-b-[10rem];
+
   position: absolute;
   height: 100%;
   width: 100%;
   top: 0;
   left: 0;
-  border-right: 18rem solid transparent;
-  border-bottom: 10rem solid transparent;
-  border-left: 18rem solid transparent;
   transform-origin: top;
   transition: transform 0.25s linear;
 }
 
 /* Lid when closed */
 .lid.one {
-  border-top: 10rem solid var(--color-main-green-darker);
+  border-top: 10rem solid #ffb2c7;
   transform: rotateX(0deg);
   z-index: 3;
   transition-delay: 0.2s;
@@ -177,30 +179,31 @@ onUnmounted(() => {
 
 /* Lid when opened */
 .lid.two {
-  border-top: 10rem solid var(--color-main-green-darker);
+  border-top: 10rem solid #ffc1cc;
   transform: rotateX(90deg);
   z-index: 1;
   transition-delay: 0.1s;
 }
-
 .envelope {
+  @apply border-solid
+  border-t-transparent border-r-[#ffe1d8] border-b-[#ffe1d8] border-l-[#FFF2DE]
+  border-x-[12.25rem] md:border-x-[18rem] border-y-[10rem] md:border-y-[10rem];
+
   position: absolute;
   height: 100%;
   width: 100%;
   top: 0;
   left: 0;
-  border-top: 10rem solid transparent;
-  border-right: 18rem solid var(--color-main-green-lighter);
-  border-bottom: 10rem solid var(--color-main-green-lighter);
-  border-left: 18rem solid var(--color-main-green);
+  //border-top: 10rem solid transparent;
+  //border-right: 18rem solid var(--color-main-green-lighter);
+  //border-bottom: 10rem solid var(--color-main-green-lighter);
+  //border-left: 18rem solid var(--color-main-green);
   z-index: 3;
 }
 
 .letter {
   position: absolute;
   top: 0;
-  width: 80%;
-  height: 80%;
   background-color: white;
   border-radius: 15px;
   z-index: 2;
