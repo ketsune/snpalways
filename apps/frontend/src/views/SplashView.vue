@@ -60,7 +60,7 @@ import EnvelopeAnimation from '@/components/EnvelopeAnimation.vue'
   );
   -webkit-mask-image: url('@/assets/brush-bg.png');
   mask-image: url('@/assets/brush-bg.png');
-  //-webkit-mask-size: contain;
+  -webkit-mask-size: contain;
   mask-size: 100%, contain;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
