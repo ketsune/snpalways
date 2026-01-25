@@ -126,7 +126,7 @@ onUnmounted(() => {
   margin-top: 16rem;
   height: 20rem;
   width: 36rem;
-  max-width: 95vw;
+  max-width: 85vw;
   background-color: #ffc1cc;
   position: relative;
   display: flex;
@@ -159,7 +159,7 @@ onUnmounted(() => {
 }
 
 .lid {
-  @apply border-transparent border-x-[12.25rem] border-b-[10rem];
+  @apply border-transparent border-x-[11rem] border-b-[8rem];
 
   position: absolute;
   height: 100%;
@@ -186,7 +186,7 @@ onUnmounted(() => {
   transition-delay: 0.1s;
 }
 .envelope {
-  @apply border-solid border-t-transparent border-r-[#ffe1d8] border-b-[#ffe1d8] border-l-[#FFF2DE] border-x-[12.25rem] border-y-[10rem];
+  @apply border-solid border-t-transparent border-r-[#ffe1d8] border-b-[#ffe1d8] border-l-[#FFF2DE] border-x-[11rem] border-y-[10rem];
 
   position: absolute;
   height: 100%;
@@ -203,6 +203,10 @@ onUnmounted(() => {
 
   .lid {
     @apply border-transparent border-x-[18rem] border-b-[10rem];
+  }
+
+  .envelope-background {
+    width: 38rem !important;
   }
 }
 
@@ -224,7 +228,7 @@ onUnmounted(() => {
   position: absolute;
   top: -1rem;
   height: 22rem;
-  width: 38rem;
+  width: 24rem;
   z-index: 0;
 }
 
@@ -247,8 +251,8 @@ onUnmounted(() => {
   transform: translateY(-12rem);
   height: 34rem;
   transition:
-    height 0.5s ease-in-out,
-    transform 0.5s ease-in-out;
+    height 0.4s linear,
+    transform 0.6s ease-in-out;
 }
 
 /* Photo Blocks Animation */
