@@ -3,8 +3,9 @@
 import CountdownTimer from '../components/CountdownTimer.vue'
 import VenueCarousel from '../components/VenueCarousel.vue'
 import SectionDivider from '../components/SectionDivider.vue'
-import HomePhoto2 from '@/assets/home-photo-2.JPG'
 import LineQr from '@/assets/line-qr.png'
+import DressCodeMale from '@/assets/dress-code-male.jpeg'
+import DressCodeFemale from '@/assets/dress-code-female.jpeg'
 
 // Wedding date: Saturday, May 30, 2026 · 3:00 PM (local time)
 const weddingDate = new Date('2026-05-30T15:00:00')
@@ -25,13 +26,17 @@ const venueImages = [
 <template>
   <main class="min-h-screen bg-off-white text-gray-800">
     <section
-      class="flex justify-center relative isolate overflow-hidden invited-section-background"
+      class="flex justify-center items-center relative isolate overflow-hidden invited-section-background min-h-screen md:min-h-[48.5rem]"
     >
-      <div class="mx-auto max-w-5xl px-4 py-16 sm:py-24 text-center z-1 text-shadow-custom">
-        <p class="text-sm uppercase tracking-[0.3em] text-rose-600 !font-bold">
+      <div
+        class="mx-4 md:mx-auto max-w-md md:max-w-5xl p-4 text-center z-1 text-shadow-custom custom-glass-morphism max-h-fit"
+      >
+        <p
+          class="text-sm uppercase tracking-[0.3em] text-rose-600 text-shadow-white-custom !font-bold"
+        >
           You're invited to the wedding of
         </p>
-        <h1 class="font-corinthia mt-2 md:mt-4 text-6xl md:text-8xl text-white py-4">
+        <h1 class="font-cookie mt-2 md:mt-4 text-6xl md:text-8xl text-white py-4">
           Kaywalee & Supanat
         </h1>
         <p class="mt-4 text-base sm:text-lg">Saturday, May 30, 2026 · 13:00</p>
@@ -60,11 +65,10 @@ const venueImages = [
     </section>
 
     <!-- Countdown -->
-    <section class="flex justify-center mt-8 md:mt-12 items-center">
-      <div class="h-64 countdown-background-container">
-        <img class="countdown-background" :src="HomePhoto2" alt="our-bg" />
-      </div>
-      <div class="mx-auto w-full px-4">
+    <section
+      class="flex justify-center mt-8 md:mt-12 items-center min-h-screen md:min-h-[calc(100vh*(3/4))] countdown-background-container"
+    >
+      <div class="w-full px-4">
         <CountdownTimer :target="weddingDate" title="Countdown" />
       </div>
     </section>
@@ -73,48 +77,65 @@ const venueImages = [
       <SectionDivider />
     </section>
 
-    <!-- Quick Details -->
-    <!--    <section id="details" class="flex justify-center mx-auto px-4 py-12 sm:py-16">-->
-    <!--      <div class="max-w-5xl grid gap-6 sm:grid-cols-3">-->
-    <!--        <div class="rounded-2xl border border-gray-100 p-6 shadow-sm">-->
-    <!--          <h3 class="font-medium text-gray-900">Ceremony</h3>-->
-    <!--          <p class="mt-2 text-gray-600">3:00 PM · The Conservatory Lawn</p>-->
-    <!--        </div>-->
-    <!--        <div class="rounded-2xl border border-gray-100 p-6 shadow-sm">-->
-    <!--          <h3 class="font-medium text-gray-900">Reception</h3>-->
-    <!--          <p class="mt-2 text-gray-600">5:30 PM · The Garden Terrace</p>-->
-    <!--        </div>-->
-    <!--        <div class="rounded-2xl border border-gray-100 p-6 shadow-sm">-->
-    <!--          <h3 class="font-medium text-gray-900">Dress Code</h3>-->
-    <!--          <p class="mt-2 text-gray-600">Garden Formal</p>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </section>-->
-
     <!-- Schedule -->
-    <section class="flex justify-center bg-rose-50/50 mt-8 md:mt-12">
-      <div class="mx-auto max-w-5xl px-4">
-        <h2 class="text-2xl font-semibold text-gray-900">Schedule</h2>
-        <div class="mt-6 grid gap-4 sm:grid-cols-2">
-          <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
-            <p class="text-sm text-gray-500">2:15 PM</p>
-            <p class="mt-1 font-medium text-gray-900">Guest Arrival</p>
-            <p class="text-gray-600">Doors open, find your seat and enjoy welcome refreshments.</p>
+    <section
+      class="flex justify-center items-center mt-8 md:mt-12 min-h-screen md:min-h-[calc(100vh*(3/4))] schedule-background-container"
+    >
+      <div class="grid gap-4 mx-auto max-w-5xl p-4">
+        <button class="w-fit text-2xl font-semibold p-2 rounded-2xl schedule-button opacity-80">
+          Schedule
+        </button>
+        <div class="custom-glass-morphism">
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="text-left rounded-xl p-4 custom-glass-morphism-level-two">
+              <p class="text-sm text-gray-500">13.00</p>
+              <p class="mt-1 font-medium text-gray-900">งานพิธีการ</p>
+              <p class="text-gray-600">เริ่มตั้งขบวนแห่ขันหมาก ขอเรียนเชิญแขกผู้มีเกียรติทุกท่าน</p>
+            </div>
+            <div class="text-left rounded-xl p-4 custom-glass-morphism-level-two">
+              <p class="text-sm text-gray-500">15.30</p>
+              <p class="mt-1 font-medium text-gray-900">จบงานพิธีการ</p>
+              <p class="text-gray-600">สามารถพักผ่อนภายในสถานที่จัดงาน หรือคาเฟ่ใกล้เคียงได้</p>
+            </div>
+            <div class="text-left rounded-xl p-4 custom-glass-morphism-level-two">
+              <p class="text-sm text-gray-500">17.30</p>
+              <p class="mt-1 font-medium text-gray-900">พิธีฉลองมงคลสมรส</p>
+              <p class="text-gray-600">
+                แขกผู้มีเกียรติลงทะเบียน รับของชำร่วย
+                และสามารถร่วมกิจกรรมภายในงานที่พวกเราเตรียมไว้ให้
+              </p>
+            </div>
+            <div class="text-left rounded-xl p-4 custom-glass-morphism-level-two">
+              <p class="text-sm text-gray-500">18.00</p>
+              <p class="mt-1 font-medium text-gray-900">รับประทานอาหารร่วมกัน</p>
+              <p class="text-gray-600">เริ่มเสิร์ฟอาหาร</p>
+            </div>
+            <div class="text-left rounded-xl p-4 custom-glass-morphism-level-two">
+              <p class="text-sm text-gray-500">22.00</p>
+              <p class="mt-1 font-medium text-gray-900">งานจบ</p>
+              <p class="text-gray-600">
+                พวกเราขออนุญาตไปพักผ่อน
+                <br />
+                เอ๊ะ ! แต่จะมีต่อไหมนะ ?
+              </p>
+            </div>
           </div>
-          <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
-            <p class="text-sm text-gray-500">3:00 PM</p>
-            <p class="mt-1 font-medium text-gray-900">Ceremony</p>
-            <p class="text-gray-600">Join us as we say “I do”.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-8 md:mt-12">
+      <SectionDivider />
+    </section>
+
+    <section id="dress-code flex justify-center bg-gray-50/50">
+      <div class="dress-code-container">
+        <div class="grid md:grid-cols-2 mx-auto my-4 gap-4 p-4">
+          <div class="p-4 md:my-8 custom-glass-morphism">
+            <img class="rounded-2xl" :src="DressCodeFemale" alt="female dress code" />
           </div>
-          <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
-            <p class="text-sm text-gray-500">5:30 PM</p>
-            <p class="mt-1 font-medium text-gray-900">Reception</p>
-            <p class="text-gray-600">Dinner, toasts and dancing under the stars.</p>
-          </div>
-          <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
-            <p class="text-sm text-gray-500">10:00 PM</p>
-            <p class="mt-1 font-medium text-gray-900">Send-off</p>
-            <p class="text-gray-600">Sparklers and farewells.</p>
+          <div class="p-4 md:my-8 custom-glass-morphism">
+            <img class="rounded-2xl" :src="DressCodeMale" alt="male dress code" />
           </div>
         </div>
       </div>
@@ -219,30 +240,63 @@ const venueImages = [
 }
 
 .countdown-background-container {
-  position: absolute;
+  background-image: url('@/assets/home-photo-2.JPG');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
   width: 100vw;
 }
 
-.countdown-background {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.schedule-background-container {
+  background-image: url('@/assets/home-photo-3.JPG');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  width: 100vw;
+}
+
+.schedule-button {
+  position: relative;
+  color: black;
+  mix-blend-mode: screen;
+  outline: none;
+  background: none;
+  border: none;
+}
+
+.schedule-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3rem;
+  width: 7rem;
+  border-radius: 1rem;
+  background-color: white;
+  mix-blend-mode: color-burn;
+}
+
+.dress-code-container {
+  width: 100vw;
+  background-image: url('@/assets/ray-venue-front.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.custom-glass-morphism > img {
+  box-shadow: 0 0 8px 4px white;
 }
 
 .contact-container {
   width: 100vw;
 }
+
 .text-shadow-custom {
   text-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
 }
 
-.invited-section-background:before {
-  @apply rounded-2xl bg-white/20 p-4 text-center shadow-sm ring-1 ring-black/5 backdrop-blur-md dark:bg-white/10 dark:ring-white/10;
-  content: '';
-  width: 100vw;
-  height: 100%;
-  position: absolute;
-  z-index: 0;
-  padding: 0;
+.text-shadow-white-custom {
+  text-shadow: 0 1px 4px white;
 }
 </style>
