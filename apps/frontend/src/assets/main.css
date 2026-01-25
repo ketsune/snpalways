@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Corinthia:wght@400;700&family=Fleur+De+Leah&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cookie&family=Corinthia:wght@400;700&family=Fleur+De+Leah&display=swap');
 @import "tailwindcss";
 @import './base.css';
 
@@ -15,6 +15,21 @@
 
   --font-corinthia: "Corinthia", cursive;
   --font-fluer-de-leah: "Fleur De Leah", cursive;
+  --font-cookie: "Cookie", cursive;
+}
+
+@layer components {
+  .custom-glass-morphism {
+    @apply rounded-2xl border border-white/30 bg-white/20 p-2 md:p-4 text-center shadow-sm ring-1 ring-black/5 backdrop-blur-xl
+    dark:border-white/10 dark:bg-white/10 dark:ring-white/10;
+  }
+
+  .custom-glass-morphism-level-two {
+    @apply rounded-2xl border border-white/30 bg-white/20 p-2 md:p-4 text-center shadow-sm ring-1 ring-black/5 backdrop-blur-sm
+    dark:border-white/10 dark:bg-white/10 dark:ring-white/10;
+
+    box-shadow: inset 0 0 16px 1px light-dark(rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0.3));
+  }
 }
 
 @source "./index.html";

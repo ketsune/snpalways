@@ -78,13 +78,14 @@ onUnmounted(() => {
       <div class="lid one"></div>
       <div class="lid two"></div>
       <div class="envelope"></div>
-      <div class="p-4 letter font-corinthia font-bold text-2xl md:text-3xl">
+      <div class="p-4 letter font-cookie font-bold text-2xl md:text-3xl">
         <h2 class="text-3xl md:text-4xl">“You’re Invited!”</h2>
-        <h1 class="text-6xl md:text-7xl">Kaywalee & Supanat</h1>
+        <h1 class="text-5xl md:text-7xl">Kaywalee & Supanat</h1>
         <h2>We are getting married!</h2>
         <p>30 May 2026 @ Ray Venue,</p>
         <p>We can’t wait to share this special day with you.</p>
       </div>
+      <div class="envelope-background custom-glass-morphism"></div>
     </div>
 
     <div
@@ -95,7 +96,7 @@ onUnmounted(() => {
         <div
           v-for="block in blocks"
           :key="block.id"
-          class="photo-block w-96 h-[-66rem] flex items-center justify-center border-[1rem] border-white rounded-lg bg-white"
+          class="photo-block w-96 h-[-66rem] flex items-center justify-center custom-glass-morphism"
           :class="[
             block.side === 'left' ? 'slide-left self-start' : 'slide-right self-end',
             { 'is-visible': isPhotoAnimated },
@@ -125,7 +126,7 @@ onUnmounted(() => {
   margin-top: 16rem;
   height: 20rem;
   width: 36rem;
-  max-width: 95vw;
+  max-width: 85vw;
   background-color: #ffc1cc;
   position: relative;
   display: flex;
@@ -158,7 +159,7 @@ onUnmounted(() => {
 }
 
 .lid {
-  @apply border-transparent border-x-[12.25rem] border-b-[10rem];
+  @apply border-transparent border-x-[11rem] border-b-[8rem];
 
   position: absolute;
   height: 100%;
@@ -185,7 +186,7 @@ onUnmounted(() => {
   transition-delay: 0.1s;
 }
 .envelope {
-  @apply border-solid border-t-transparent border-r-[#ffe1d8] border-b-[#ffe1d8] border-l-[#FFF2DE] border-x-[12.25rem] border-y-[10rem];
+  @apply border-solid border-t-transparent border-r-[#ffe1d8] border-b-[#ffe1d8] border-l-[#FFF2DE] border-x-[11rem] border-y-[10rem];
 
   position: absolute;
   height: 100%;
@@ -203,6 +204,10 @@ onUnmounted(() => {
   .lid {
     @apply border-transparent border-x-[18rem] border-b-[10rem];
   }
+
+  .envelope-background {
+    width: 38rem !important;
+  }
 }
 
 .letter {
@@ -219,6 +224,14 @@ onUnmounted(() => {
   color: #3b4049;
 }
 
+.envelope-background {
+  position: absolute;
+  top: -1rem;
+  height: 22rem;
+  width: 24rem;
+  z-index: 0;
+}
+
 .envelope-container.is-animated .lid.one {
   transform: rotateX(90deg);
   transition-delay: 0.1s;
@@ -232,6 +245,14 @@ onUnmounted(() => {
 .envelope-container.is-animated .letter {
   transform: translateY(-12rem);
   transition-delay: 0.8s;
+}
+
+.envelope-container.is-animated .envelope-background {
+  transform: translateY(-12rem);
+  height: 34rem;
+  transition:
+    height 0.4s linear,
+    transform 0.6s ease-in-out;
 }
 
 /* Photo Blocks Animation */
