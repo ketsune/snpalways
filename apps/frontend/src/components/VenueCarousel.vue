@@ -77,7 +77,7 @@ function onTouchEnd(e: TouchEvent) {
 
 <template>
   <div
-    class="group relative overflow-hidden rounded-2xl ring-1 ring-gray-200 bg-white/50"
+    class="group relative overflow-hidden rounded-2xl ring-1 ring-gray-200 bg-white/50 h-full"
     role="region"
     aria-roledescription="carousel"
     aria-label="Garden venue photos"
@@ -90,7 +90,7 @@ function onTouchEnd(e: TouchEvent) {
     @touchend.passive="onTouchEnd"
   >
     <!-- Slides -->
-    <div class="relative h-64 sm:h-full w-full">
+    <div class="relative h-64 sm:h-full w-full my-auto">
       <template v-for="(img, i) in images" :key="img.src + i">
         <img
           v-show="i === current"

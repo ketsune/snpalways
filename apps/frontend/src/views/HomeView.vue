@@ -60,7 +60,7 @@ const venueImages = [
       </div>
     </section>
 
-    <section class="mt-6 md:mt-10">
+    <section id="details" class="mt-6 md:mt-10">
       <SectionDivider />
     </section>
 
@@ -128,7 +128,7 @@ const venueImages = [
       <SectionDivider />
     </section>
 
-    <section id="dress-code flex justify-center bg-gray-50/50">
+    <section id="dress-code flex justify-center bg-gray-50/50 mt-8 md:mt-12">
       <div class="dress-code-container">
         <div class="grid md:grid-cols-2 mx-auto my-4 gap-4 p-4">
           <div class="p-4 md:my-8 custom-glass-morphism">
@@ -146,13 +146,15 @@ const venueImages = [
     </section>
 
     <!-- Venue -->
-    <section id="venue" class="flex justify-center mx-auto px-4 min-h-[600px] mt-8 md:mt-12">
-      <div class="w-full max-w-5xl grid items-stretch gap-8 md:grid-cols-2">
-        <div class="flex flex-col md:h-full">
+    <section
+      id="venue"
+      class="flex justify-center items-center mx-auto p-4 min-h-[600px] mt-8 md:mt-12 venue-background-container"
+    >
+      <div class="w-full max-w-5xl grid items-stretch gap-4 md:grid-cols-2">
+        <div class="flex flex-col p-4 h-auto my-auto custom-glass-morphism text-left">
           <h2 class="text-2xl font-semibold text-gray-900">Venue</h2>
           <p class="text-gray-600">Ray Venue, Nonthaburi</p>
           <iframe
-            class="w-full flex-1"
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3874.136927101776!2d100.48806587536286!3d13.83081529545871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29b002f6cd8cd%3A0x81ba3ec3330f974f!2sRAY%20VENUE!5e0!3m2!1sth!2sth!4v1759586278603!5m2!1sth!2sth"
             style="border: 0"
             loading="lazy"
@@ -182,7 +184,9 @@ const venueImages = [
             >
           </div>
         </div>
-        <VenueCarousel :images="venueImages" />
+        <div class="h-full p-4 custom-glass-morphism">
+          <VenueCarousel :images="venueImages" />
+        </div>
       </div>
     </section>
 
@@ -190,16 +194,42 @@ const venueImages = [
       <SectionDivider />
     </section>
 
-    <section id="contact" class="flex justify-center bg-gray-50/50">
+    <!-- Pre-wedding Photo Section -->
+    <section
+      class="flex justify-center items-center text-center min-h-screen home-gallery-container mt-6 md:mt-10"
+    >
+      <div class="custom-glass-morphism p-4">
+        <h2 class="font-cookie text-5xl md:text-6xl text-rose-600 text-shadow-white-custom mb-8">
+          Our Memories
+        </h2>
+        <div class="mt-10">
+          <router-link
+            to="/gallery"
+            class="inline-flex items-center rounded-full bg-rose-600 px-8 py-3 text-white shadow hover:bg-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 transition-colors"
+          >
+            View Full Gallery
+          </router-link>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-8 md:mt-12">
+      <SectionDivider />
+    </section>
+
+    <section
+      id="contact"
+      class="flex justify-center bg-gray-50/50 mt-8 md:mt-12 contact-background-container"
+    >
       <div
         class="contact-container md:flex mx-auto max-w-5xl px-4 py-12 md:py-16 text-center justify-between"
       >
-        <div class="flex flex-col justify-center items-start">
-          <h2 class="text-2xl text-left font-semibold text-gray-900">Contact Us</h2>
-          <p class="text-gray-600 text-left md:text-nowrap">
+        <div class="flex flex-col justify-center items-start custom-glass-morphism p-4">
+          <h2 class="text-2xl text-left font-semibold text-white">Contact Us</h2>
+          <p class="text-off-white text-left md:text-nowrap">
             If you have any questions, feel free to reach out to us via Line.
           </p>
-          <div class="flex justify-center w-100 md:justify-start">
+          <div class="flex justify-center w-full md:justify-start">
             <a
               href="https://lin.ee/NDMyjnw"
               target="_blank"
@@ -210,7 +240,9 @@ const venueImages = [
             </a>
           </div>
         </div>
-        <div class="flex flex-col items-center justify-center mt-6 md:mt-0">
+        <div
+          class="flex flex-col items-center justify-center mt-6 md:mt-0 custom-glass-morphism p-4"
+        >
           <div class="bg-white p-4 rounded-2xl shadow-sm ring-1 ring-gray-100">
             <!-- QR Code Placeholder - In a real app, replace with an actual QR code image -->
             <div class="w-48 h-48 flex items-center justify-center rounded-lg">
@@ -231,6 +263,10 @@ const venueImages = [
 <style scoped>
 @reference "tailwindcss";
 
+.font-cookie {
+  font-family: 'Cookie', cursive;
+}
+
 .invited-section-background {
   background-image: url('@/assets/home-photo-1.JPG');
   background-size: cover;
@@ -249,6 +285,22 @@ const venueImages = [
 
 .schedule-background-container {
   background-image: url('@/assets/home-photo-3.JPG');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  width: 100vw;
+}
+
+.contact-background-container {
+  background-image: url('@/assets/home-photo-4.JPG');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  width: 100vw;
+}
+
+.venue-background-container {
+  background-image: url('@/assets/ray-venue-front-virtual.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -298,5 +350,23 @@ const venueImages = [
 
 .text-shadow-white-custom {
   text-shadow: 0 1px 4px white;
+}
+
+@media (orientation: landscape) {
+  .home-gallery-container {
+    background-image: url('@/assets/home-gallery-landscape.jpeg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+@media (orientation: portrait) {
+  .home-gallery-container {
+    background-image: url('@/assets/home-gallery-portrait.jpeg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
 }
 </style>

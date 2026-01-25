@@ -40,6 +40,11 @@ const router = createRouter({
       name: 'about',
       component: () => import('../views/AboutView.vue'),
     },
+    {
+      path: '/gallery',
+      name: 'gallery',
+      component: () => import('../views/GalleryView.vue'),
+    },
     // todo add video presentation
     // todo pre wedding photo
     // todo seat plan
