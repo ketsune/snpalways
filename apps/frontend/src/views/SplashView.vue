@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import EnvelopeAnimation from '@/components/EnvelopeAnimation.vue'
+
+const scrollToEnvelope = () => {
+  document.getElementById('envelope')?.scrollIntoView({ behavior: 'smooth' })
+}
 </script>
 
 <template>
@@ -17,7 +21,10 @@ import EnvelopeAnimation from '@/components/EnvelopeAnimation.vue'
         </div>
       </div>
 
-      <div class="animate-bounce mt-16 relative z-10">
+      <div
+        class="animate-bounce mt-16 relative z-10 hover:cursor-pointer"
+        @click="scrollToEnvelope"
+      >
         <svg
           class="w-6 h-6 text-gray-600 mx-auto"
           fill="none"
@@ -35,7 +42,7 @@ import EnvelopeAnimation from '@/components/EnvelopeAnimation.vue'
     </section>
 
     <!-- Animation Section -->
-    <section class="relative overflow-hidden bg-transparent">
+    <section id="envelope" class="relative overflow-hidden bg-transparent">
       <EnvelopeAnimation />
     </section>
   </main>

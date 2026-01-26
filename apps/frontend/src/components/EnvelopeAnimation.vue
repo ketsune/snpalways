@@ -78,7 +78,7 @@ onUnmounted(() => {
       <div class="lid one"></div>
       <div class="lid two"></div>
       <div class="envelope"></div>
-      <div class="p-4 letter font-cookie font-bold text-2xl md:text-3xl">
+      <div class="p-4 letter font-cookie font-bold text-xl md:text-3xl">
         <h2 class="text-3xl md:text-4xl">“You’re Invited!”</h2>
         <h1 class="text-5xl md:text-7xl">Kaywalee & Supanat</h1>
         <h2>We are getting married!</h2>
@@ -111,7 +111,7 @@ onUnmounted(() => {
           <button
             class="cursor-pointer px-6 py-2 bg-rose-500 text-white rounded-full hover:bg-rose-600 transition-colors"
           >
-            Visit Site
+            Join the Journey
           </button>
         </RouterLink>
       </div>
