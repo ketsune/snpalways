@@ -24,7 +24,7 @@ const venueImages = [
   },
 ]
 
-const isModalOpen = ref(true)
+const isModalOpen = ref(false)
 
 const closeModal = () => {
   isModalOpen.value = false
@@ -37,6 +37,11 @@ const handleKeydown = (e: KeyboardEvent) => {
 }
 
 onMounted(() => {
+  // Open modal only if we came from SplashView (indicated by history state)
+  if (window.history.state?.fromSplash) {
+    isModalOpen.value = true
+  }
+
   window.addEventListener('keydown', handleKeydown)
 })
 
@@ -78,6 +83,12 @@ onUnmounted(() => {
           >
             View details
           </a>
+          <button
+            @click="isModalOpen = true"
+            class="inline-flex items-center rounded-full border border-rose-200 px-4 py-1 md:px-6 md:py-3 text-rose-700 bg-rose-50 hover:bg-rose-200 cursor-pointer"
+          >
+            Invitation Card
+          </button>
         </div>
       </div>
     </section>
@@ -286,7 +297,7 @@ onUnmounted(() => {
       >
         <div
           v-if="isModalOpen"
-          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm cursor-pointer"
+          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
           @click="closeModal"
         >
           <div
@@ -295,7 +306,7 @@ onUnmounted(() => {
           >
             <button
               @click="closeModal"
-              class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 transition-colors"
+              class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 transition-colors cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
