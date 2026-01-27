@@ -23,6 +23,9 @@ import g8 from '@/assets/gallery/20260127_110342554_iOS.jpg'
 import g9 from '@/assets/gallery/20260127_110619956_iOS.jpg'
 import g10 from '@/assets/gallery/20260127_111846993_iOS.jpg'
 import g11 from '@/assets/gallery/20260127_124405451_iOS.jpg'
+import g12 from '@/assets/gallery/gallery-12.jpg'
+import g13 from '@/assets/gallery/gallery-13.jpg'
+import g14 from '@/assets/gallery/gallery-14.jpg'
 
 const galleryImages = [
   { src: photo1, alt: 'Pre-wedding Photo 1' },
@@ -42,7 +45,10 @@ const galleryImages = [
   { src: g8, alt: 'Gallery Photo 8' },
   { src: g9, alt: 'Gallery Photo 9' },
   { src: g10, alt: 'Gallery Photo 10' },
-  { src: g11, alt: 'Gallery Photo 11' }
+  { src: g11, alt: 'Gallery Photo 11' },
+  { src: g12, alt: 'Gallery Photo 12' },
+  { src: g13, alt: 'Gallery Photo 13' },
+  { src: g14, alt: 'Gallery Photo 14' }
 ].sort(() => Math.random() - 0.5)
 
 const selectedImage = ref<{ src: string; alt: string } | null>(null)
