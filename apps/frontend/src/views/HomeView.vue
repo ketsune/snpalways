@@ -6,6 +6,8 @@ import SectionDivider from '../components/SectionDivider.vue'
 import LineQr from '@/assets/line-qr.png'
 import DressCodeMale from '@/assets/dress-code-male.jpeg'
 import DressCodeFemale from '@/assets/dress-code-female.jpeg'
+import { ref, onMounted, onUnmounted } from 'vue'
+import InvitationCard from '@/components/InvitationCard.vue'
 
 // Wedding date: Saturday, May 30, 2026 · 3:00 PM (local time)
 const weddingDate = new Date('2026-05-30T15:00:00')
@@ -21,6 +23,26 @@ const venueImages = [
     alt: 'Venue maps',
   },
 ]
+
+const isModalOpen = ref(true)
+
+const closeModal = () => {
+  isModalOpen.value = false
+}
+
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && isModalOpen.value) {
+    closeModal()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
@@ -252,6 +274,49 @@ const venueImages = [
         </div>
       </div>
     </section>
+
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="isModalOpen"
+          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          @click="closeModal"
+        >
+          <div
+            class="relative max-w-lg w-full h-full custom-glass-morphism"
+            @click.stop
+          >
+            <button
+              @click="closeModal"
+              class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <InvitationCard />
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
 
     <!-- Footer -->
     <footer class="border-t border-gray-100 py-10 text-center text-sm text-gray-500">
