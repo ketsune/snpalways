@@ -18,6 +18,14 @@ import g3 from '@/assets/gallery/IMG_9257.jpeg'
 import g4 from '@/assets/gallery/IMG_9312.jpeg'
 import g5 from '@/assets/gallery/IMG_9313.jpeg'
 import g6 from '@/assets/gallery/IMG_9322.jpeg'
+import g7 from '@/assets/gallery/20260127_105547739_iOS.jpg'
+import g8 from '@/assets/gallery/20260127_110342554_iOS.jpg'
+import g9 from '@/assets/gallery/20260127_110619956_iOS.jpg'
+import g10 from '@/assets/gallery/20260127_111846993_iOS.jpg'
+import g11 from '@/assets/gallery/20260127_124405451_iOS.jpg'
+import g12 from '@/assets/gallery/gallery-12.jpg'
+import g13 from '@/assets/gallery/gallery-13.jpg'
+import g14 from '@/assets/gallery/gallery-14.jpg'
 
 const galleryImages = [
   { src: photo1, alt: 'Pre-wedding Photo 1' },
@@ -32,7 +40,15 @@ const galleryImages = [
   { src: g3, alt: 'Gallery Photo 3' },
   { src: g4, alt: 'Gallery Photo 4' },
   { src: g5, alt: 'Gallery Photo 5' },
-  { src: g6, alt: 'Gallery Photo 6' }
+  { src: g6, alt: 'Gallery Photo 6' },
+  { src: g7, alt: 'Gallery Photo 7' },
+  { src: g8, alt: 'Gallery Photo 8' },
+  { src: g9, alt: 'Gallery Photo 9' },
+  { src: g10, alt: 'Gallery Photo 10' },
+  { src: g11, alt: 'Gallery Photo 11' },
+  { src: g12, alt: 'Gallery Photo 12' },
+  { src: g13, alt: 'Gallery Photo 13' },
+  { src: g14, alt: 'Gallery Photo 14' }
 ].sort(() => Math.random() - 0.5)
 
 const selectedImage = ref<{ src: string; alt: string } | null>(null)
@@ -115,8 +131,19 @@ onUnmounted(() => {
               @click="closeModal"
               class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
             <img
