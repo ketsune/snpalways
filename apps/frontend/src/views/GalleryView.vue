@@ -52,7 +52,6 @@ import g6_3 from '@/assets/gallery/gallery-6-3.jpg'
 import g6_4 from '@/assets/gallery/gallery-6-4.jpg'
 import g6_5 from '@/assets/gallery/gallery-6-5.jpg'
 import g6_6 from '@/assets/gallery/gallery-6-6.jpg'
-import g6_7 from '@/assets/gallery/gallery-6-7.jpg'
 import g6_8 from '@/assets/gallery/gallery-6-8.jpg'
 import g6_9 from '@/assets/gallery/gallery-6-9.jpg'
 import g6_10 from '@/assets/gallery/gallery-6-10.jpg'
@@ -111,7 +110,6 @@ const rawGalleryImages = [
   { src: g6_4, alt: 'Gallery Photo 6-4', groupId: 6 },
   { src: g6_5, alt: 'Gallery Photo 6-5', groupId: 6 },
   { src: g6_6, alt: 'Gallery Photo 6-6', groupId: 6 },
-  { src: g6_7, alt: 'Gallery Photo 6-7', groupId: 6 },
   { src: g6_8, alt: 'Gallery Photo 6-8', groupId: 6 },
   { src: g6_9, alt: 'Gallery Photo 6-9', groupId: 6 },
   { src: g6_10, alt: 'Gallery Photo 6-10', groupId: 6 },
