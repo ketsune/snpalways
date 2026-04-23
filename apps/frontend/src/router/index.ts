@@ -28,14 +28,6 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/rsvp',
-      name: 'rsvp',
-      beforeEnter() {
-        window.location.href = 'https://forms.gle/e1WGCZBAHVRLV5cA7'
-      },
-      component: () => import('../views/RsvpView.vue'),
-    },
-    {
       path: '/about',
       name: 'about',
       component: () => import('../views/AboutView.vue'),
@@ -63,7 +55,6 @@ const router = createRouter({
     // todo add video presentation
     // todo pre wedding photo
     // todo seat plan
-    // link for RSVP
   ],
 })
 
