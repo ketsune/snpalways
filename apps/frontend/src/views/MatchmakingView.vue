@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { apiUrl } from '@/lib/api'
 
 const submitterName = ref('')
 const friendName = ref('')
@@ -77,7 +78,7 @@ async function submit() {
   errorMessage.value = null
   loading.value = true
   try {
-    const res = await fetch('/api/matchmaking', {
+    const res = await fetch(apiUrl('/api/matchmaking'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

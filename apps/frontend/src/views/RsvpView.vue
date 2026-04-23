@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { apiUrl } from '@/lib/api'
 
 const name = ref('')
 const attending = ref(true)
@@ -13,7 +14,7 @@ async function submit() {
   error.value = null
   loading.value = true
   try {
-    const res = await fetch('/api/rsvp', {
+    const res = await fetch(apiUrl('/api/rsvp'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name.value, attending: attending.value, guests: Number(guests.value) || 0 })
