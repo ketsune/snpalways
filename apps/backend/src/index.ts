@@ -142,7 +142,7 @@ const app = new Elysia()
     }
   })
   .get('/api/matchmaking/all', async ({ headers, set }) => {
-    const token = process.env.MATCHMAKING_MOD_TOKEN;
+    const token = process.env.SECRET_SERVICE_KEY;
     if (!token || headers['x-mod-token'] !== token) {
       set.status = 401;
       return { success: false, message: 'Unauthorized' };
@@ -168,7 +168,7 @@ const app = new Elysia()
     }
   })
   .patch('/api/matchmaking/:id', async ({ params, body, headers, set }) => {
-    const token = process.env.MATCHMAKING_MOD_TOKEN;
+    const token = process.env.SECRET_SERVICE_KEY;
     if (!token || headers['x-mod-token'] !== token) {
       set.status = 401;
       return { success: false, message: 'Unauthorized' };
