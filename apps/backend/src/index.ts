@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { Elysia, t } from "elysia";
+import { cors } from "@elysiajs/cors";
 import { Effect } from "effect";
 import { SqlClient } from "@effect/sql";
 import { LiveDatabase } from "./db";
@@ -13,6 +14,10 @@ const dbHealthCheck = Effect.gen(function* () {
 }).pipe(Effect.provide(LiveDatabase));
 
 const app = new Elysia()
+  .use(cors({
+    origin: process.env.CORS_ORIGIN || true,
+    allowedHeaders: ['Content-Type', 'x-mod-token'],
+  }))
   .get('/api/greeting', () => ({
     message: "Welcome to our wedding website API!"
   }))
