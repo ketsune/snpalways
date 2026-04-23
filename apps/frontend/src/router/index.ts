@@ -45,6 +45,21 @@ const router = createRouter({
       name: 'gallery',
       component: () => import('../views/GalleryView.vue'),
     },
+    {
+      path: '/matchmaking',
+      name: 'matchmaking',
+      component: () => import('../views/MatchmakingView.vue'),
+    },
+    {
+      path: '/matchmaking/board',
+      name: 'matchmaking-board',
+      component: () => import('../views/MatchmakingBoardView.vue'),
+    },
+    {
+      path: '/matchmaking/moderate',
+      name: 'matchmaking-moderate',
+      component: () => import('../views/MatchmakingModerateView.vue'),
+    },
     // todo add video presentation
     // todo pre wedding photo
     // todo seat plan
