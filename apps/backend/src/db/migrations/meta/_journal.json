@@ -8,6 +8,13 @@
       "when": 1759593530866,
       "tag": "0000_far_giant_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1761177600000,
+      "tag": "0001_matchmaking_submissions",
+      "breakpoints": true
     }
   ]
 }

@@ -12,3 +12,17 @@ export const rsvps = pgTable('rsvps', {
 
 export type InsertRsvp = typeof rsvps.$inferInsert;
 export type SelectRsvp = typeof rsvps.$inferSelect;
+
+export const matchmakingSubmissions = pgTable('matchmaking_submissions', {
+  id: serial('id').primaryKey(),
+  submitterName: text('submitter_name').notNull(),
+  friendName: text('friend_name').notNull(),
+  contact: text('contact').notNull(),
+  bio: text('bio'),
+  photoBase64: text('photo_base64'),
+  approved: boolean('approved').notNull().default(true),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type InsertMatchmakingSubmission = typeof matchmakingSubmissions.$inferInsert;
+export type SelectMatchmakingSubmission = typeof matchmakingSubmissions.$inferSelect;
