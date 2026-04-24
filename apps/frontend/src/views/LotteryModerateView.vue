@@ -7,10 +7,10 @@ type ClosestEntry = { name: string; number: string; string_distance: number; num
 type DrawResult = {
   prize_rank: number
   winning_number: string
-  winner_name: string | null
   drawn_at: string
-  closest_by_string?: ClosestEntry | null
-  closest_by_number?: ClosestEntry | null
+  winners: { name: string; number: string }[]
+  closest_by_string: ClosestEntry | null
+  closest_by_number: ClosestEntry | null
 }
 
 type Rank = 1 | 2 | 3
@@ -30,7 +30,6 @@ const results = ref<DrawResult[]>([])
 const drawing = ref<number | null>(null)
 const drawError = ref<string | null>(null)
 
-// Modals
 const resetDrawsConfirm = ref(false)
 const fullResetModal = ref(false)
 const fullResetBusy = ref(false)
@@ -68,7 +67,6 @@ async function draw(prizeRank: number) {
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok || !data?.success) throw new Error(data?.message || 'Draw failed')
-    // Refresh to get closest winner data
     await load()
   } catch (err: unknown) {
     drawError.value = err instanceof Error ? err.message : 'Draw failed'
@@ -107,7 +105,6 @@ async function fullReset() {
     fullResetModal.value = false
   } catch (err: unknown) {
     drawError.value = err instanceof Error ? err.message : 'Reset failed'
-    fullResetModal.value = false
   } finally {
     fullResetBusy.value = false
   }
@@ -115,13 +112,15 @@ async function fullReset() {
 
 const drawnRanks = computed(() => new Set(results.value.map((r) => r.prize_rank)))
 
-function getResult(rank: number) {
+function getResult(rank: number): DrawResult | undefined {
   return results.value.find((r) => r.prize_rank === rank)
 }
 
-function entriesForRank(rank: number) {
-  return entries.value.filter((e) => e.number.length === cfg(rank).digits)
-}
+const winnerNumbers = computed(() => {
+  const s = new Set<string>()
+  for (const r of results.value) for (const w of r.winners) s.add(w.number)
+  return s
+})
 </script>
 
 <template>
@@ -145,16 +144,12 @@ function entriesForRank(rank: number) {
               class="rounded-full border border-gray-300 px-5 py-2 text-sm text-gray-700 hover:bg-gray-50"
               :disabled="fullResetBusy"
               @click="fullResetModal = false"
-            >
-              Cancel
-            </button>
+            >Cancel</button>
             <button
               class="rounded-full bg-red-600 px-5 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-50"
               :disabled="fullResetBusy"
               @click="fullReset"
-            >
-              {{ fullResetBusy ? 'Resetting…' : 'Yes, delete everything' }}
-            </button>
+            >{{ fullResetBusy ? 'Resetting…' : 'Yes, delete everything' }}</button>
           </div>
         </div>
       </div>
@@ -164,7 +159,7 @@ function entriesForRank(rank: number) {
       <h1 class="font-cookie text-5xl text-rose-600">Lottery Control Panel</h1>
       <p class="mt-2 text-gray-500 text-sm">Draw prizes and see results. Use <code>/lottery/board</code> on the projector.</p>
 
-      <!-- Auth form -->
+      <!-- Auth -->
       <form v-if="!authed" class="mt-6 flex gap-3" @submit.prevent="load">
         <input
           v-model="token"
@@ -177,13 +172,10 @@ function entriesForRank(rank: number) {
           type="submit"
           :disabled="loading"
           class="rounded-full bg-rose-600 px-6 py-2.5 text-white hover:bg-rose-700 disabled:opacity-50"
-        >
-          {{ loading ? 'Loading…' : 'Enter' }}
-        </button>
+        >{{ loading ? 'Loading…' : 'Enter' }}</button>
       </form>
       <p v-if="error" class="mt-4 text-rose-700">{{ error }}</p>
 
-      <!-- Panel -->
       <div v-if="authed" class="mt-8 space-y-10">
 
         <!-- Draw controls -->
@@ -191,26 +183,18 @@ function entriesForRank(rank: number) {
           <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
             <h2 class="text-lg font-semibold text-gray-800">Prize Draw</h2>
             <div class="flex flex-wrap gap-2 items-center">
-              <button class="text-sm text-gray-500 hover:text-gray-700 hover:underline" @click="load">Refresh</button>
-
-              <!-- Reset draws only -->
+              <button class="text-sm text-gray-500 hover:underline" @click="load">Refresh</button>
               <template v-if="!resetDrawsConfirm">
-                <button class="text-sm text-rose-500 hover:text-rose-700 hover:underline" @click="resetDrawsConfirm = true">
-                  Reset draws
-                </button>
+                <button class="text-sm text-rose-500 hover:underline" @click="resetDrawsConfirm = true">Reset draws</button>
               </template>
               <template v-else>
                 <button class="text-sm text-rose-700 font-semibold hover:underline" @click="resetDraws">Confirm</button>
                 <button class="text-sm text-gray-500 hover:underline" @click="resetDrawsConfirm = false">Cancel</button>
               </template>
-
-              <!-- Full reset (demo) -->
               <button
                 class="rounded-full border border-red-300 px-4 py-1 text-sm text-red-600 hover:bg-red-50"
                 @click="fullResetModal = true"
-              >
-                Reset all (demo)
-              </button>
+              >Reset all (demo)</button>
             </div>
           </div>
 
@@ -218,21 +202,24 @@ function entriesForRank(rank: number) {
 
           <div class="grid gap-4 sm:grid-cols-3">
             <div
-              v-for="rank in [3, 2, 1]"
+              v-for="rank in ([3, 2, 1] as Rank[])"
               :key="rank"
               class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm text-center"
             >
-              <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">{{ cfg(rank).label }}</p>
+              <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">{{ cfg(rank).label }}</p>
+              <p class="text-xs text-gray-400 mb-3">{{ cfg(rank).digits }} digits</p>
 
               <template v-if="getResult(rank)">
-                <p class="font-mono text-3xl font-bold tracking-widest text-gray-900">
+                <p class="font-mono text-3xl font-bold tracking-widest text-gray-900 mb-3">
                   {{ getResult(rank)!.winning_number }}
                 </p>
-                <p v-if="getResult(rank)!.winner_name" class="mt-2 text-green-700 font-semibold text-sm">
-                  🎉 {{ getResult(rank)!.winner_name }}
-                </p>
+                <div v-if="getResult(rank)!.winners.length" class="space-y-1">
+                  <p v-for="w in getResult(rank)!.winners" :key="w.number" class="text-green-700 font-semibold text-sm">
+                    🎉 {{ w.name }}
+                  </p>
+                </div>
                 <template v-else>
-                  <p class="mt-2 text-gray-400 text-xs mb-1">No exact winner</p>
+                  <p class="text-gray-400 text-xs mb-1">No winner</p>
                   <div v-if="getResult(rank)!.closest_by_string" class="text-left text-xs mt-2 rounded-lg bg-amber-50 px-3 py-2">
                     <p class="font-semibold text-gray-700">{{ getResult(rank)!.closest_by_string!.name }}
                       <span class="font-mono font-normal text-gray-400 ml-1">{{ getResult(rank)!.closest_by_string!.number }}</span>
@@ -270,27 +257,25 @@ function entriesForRank(rank: number) {
           </div>
         </div>
 
-        <!-- Entries by tier -->
-        <div v-for="rank in [1, 2, 3]" :key="`entries-${rank}`">
+        <!-- Entry list -->
+        <div>
           <h2 class="text-base font-semibold text-gray-700 mb-3">
-            {{ cfg(rank).label }} entries
-            <span class="ml-2 text-xs font-normal text-gray-400">
-              ({{ cfg(rank).digits }} digits · {{ entriesForRank(rank).length }} registered)
-            </span>
+            Registered numbers
+            <span class="ml-2 text-xs font-normal text-gray-400">({{ entries.length }} total)</span>
           </h2>
           <div class="flex flex-wrap gap-2">
             <div
-              v-for="entry in entriesForRank(rank)"
+              v-for="entry in entries"
               :key="entry.id"
               class="rounded-xl border px-3 py-2 text-sm"
-              :class="getResult(rank)?.winning_number === entry.number
+              :class="winnerNumbers.has(entry.number)
                 ? 'border-green-400 bg-green-50 text-green-800 font-semibold'
                 : 'border-gray-200 bg-white text-gray-700'"
             >
               <span class="font-mono font-bold">{{ entry.number }}</span>
               <span class="ml-2 text-gray-500">{{ entry.name }}</span>
             </div>
-            <p v-if="entriesForRank(rank).length === 0" class="text-gray-400 text-sm">No entries yet.</p>
+            <p v-if="entries.length === 0" class="text-gray-400 text-sm">No entries yet.</p>
           </div>
         </div>
 

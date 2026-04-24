@@ -2,20 +2,14 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { apiFetch } from '@/lib/api'
 
-type ClosestEntry = {
-  name: string
-  number: string
-  string_distance: number
-  number_difference: number
-}
-
+type ClosestEntry = { name: string; number: string; string_distance: number; number_difference: number }
 type DrawResult = {
   prize_rank: number
   winning_number: string
-  winner_name: string | null
   drawn_at: string
-  closest_by_string?: ClosestEntry | null
-  closest_by_number?: ClosestEntry | null
+  winners: { name: string; number: string }[]
+  closest_by_string: ClosestEntry | null
+  closest_by_number: ClosestEntry | null
 }
 
 type Rank = 1 | 2 | 3
@@ -97,7 +91,7 @@ function getResult(rank: number): DrawResult | undefined {
 
     <div class="w-full max-w-2xl space-y-6">
       <div
-        v-for="rank in [1, 2, 3]"
+        v-for="rank in ([1, 2, 3] as Rank[])"
         :key="rank"
         class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur px-8 py-7 text-center"
         :class="states[rank] === 'revealed' ? 'ring-1 ring-white/20' : ''"
@@ -129,18 +123,24 @@ function getResult(rank: number): DrawResult | undefined {
           </template>
         </div>
 
-        <!-- Winner / closest -->
+        <!-- Winners / closest -->
         <template v-if="states[rank] === 'revealed'">
-          <!-- Exact winner -->
-          <p v-if="getResult(rank)?.winner_name" class="text-lg sm:text-2xl font-semibold text-white">
-            🎉 {{ getResult(rank)!.winner_name }}
-          </p>
+          <!-- Winners (multiple possible for 2nd/3rd) -->
+          <div v-if="getResult(rank)?.winners.length" class="space-y-1">
+            <p
+              v-for="w in getResult(rank)!.winners"
+              :key="w.number"
+              class="text-lg sm:text-2xl font-semibold text-white"
+            >
+              🎉 {{ w.name }}
+              <span class="font-mono text-sm font-normal opacity-50">{{ w.number }}</span>
+            </p>
+          </div>
 
-          <!-- No exact winner — show closest -->
+          <!-- No winner — closest match -->
           <template v-else-if="getResult(rank)?.closest_by_string || getResult(rank)?.closest_by_number">
-            <p class="text-gray-500 text-xs uppercase tracking-widest mb-3">No exact winner — closest match</p>
+            <p class="text-gray-500 text-xs uppercase tracking-widest mb-3">No winner — closest match</p>
 
-            <!-- closest_by_string (always shown when no winner) -->
             <div
               v-if="getResult(rank)?.closest_by_string"
               class="rounded-xl border border-white/10 bg-white/5 px-5 py-3 mb-2 text-left"
@@ -155,7 +155,6 @@ function getResult(rank: number): DrawResult | undefined {
               </div>
             </div>
 
-            <!-- closest_by_number (only when different person) -->
             <div
               v-if="getResult(rank)?.closest_by_number"
               class="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-left"
@@ -172,7 +171,7 @@ function getResult(rank: number): DrawResult | undefined {
             </div>
           </template>
 
-          <p v-else class="text-gray-600 text-sm">No winner · No entries for this prize</p>
+          <p v-else class="text-gray-600 text-sm">No winner</p>
         </template>
 
         <div v-else class="text-gray-600 text-sm">Awaiting draw…</div>

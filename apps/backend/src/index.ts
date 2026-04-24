@@ -246,9 +246,9 @@ const app = new Elysia()
     const authErr = requireServiceKey(headers, set);
     if (authErr) return authErr;
     const num = body.number.trim();
-    if (!/^\d+$/.test(num) || ![2, 3, 6].includes(num.length)) {
+    if (!/^\d{6}$/.test(num)) {
       set.status = 400;
-      return { success: false, message: 'Number must be exactly 2, 3, or 6 digits.' };
+      return { success: false, message: 'Number must be exactly 6 digits.' };
     }
     try {
       const result = await Effect.runPromise(
@@ -311,7 +311,6 @@ const app = new Elysia()
       set.status = 400;
       return { success: false, message: 'prizeRank must be 1, 2, or 3.' };
     }
-    // Generate a number whose digits are all unique
     function generateUniqueDigitNumber(n: number): string {
       const pool = Array.from({ length: 10 }, (_, i) => i);
       for (let i = pool.length - 1; i > 0; i--) {
@@ -322,22 +321,16 @@ const app = new Elysia()
     }
     const winningNumber = generateUniqueDigitNumber(digitCount);
     try {
-      const result = await Effect.runPromise(
+      await Effect.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
-          // Insert draw (unique constraint on prize_rank prevents double-drawing)
           yield* sql`
             insert into lottery_draws (prize_rank, winning_number)
             values (${body.prizeRank}, ${winningNumber})
           `;
-          // Find winner
-          const winners = yield* sql<{ name: string }>`
-            select name from lottery_entries where number = ${winningNumber} limit 1
-          `;
-          return { winningNumber, winnerName: winners[0]?.name ?? null };
         }).pipe(Effect.provide(LiveDatabase))
       );
-      return { success: true, ...result };
+      return { success: true, winningNumber };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : '';
       if (msg.includes('unique') || msg.includes('duplicate')) {
@@ -357,13 +350,8 @@ const app = new Elysia()
       const { draws, entries } = await Effect.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
-          const draws = yield* sql<{
-            prize_rank: number; winning_number: string; drawn_at: string; winner_name: string | null;
-          }>`
-            select d.prize_rank, d.winning_number, d.drawn_at, e.name as winner_name
-            from lottery_draws d
-            left join lottery_entries e on e.number = d.winning_number
-            order by d.prize_rank asc
+          const draws = yield* sql<{ prize_rank: number; winning_number: string; drawn_at: string }>`
+            select prize_rank, winning_number, drawn_at from lottery_draws order by prize_rank asc
           `;
           const entries = yield* sql<{ name: string; number: string }>`
             select name, number from lottery_entries
@@ -375,17 +363,22 @@ const app = new Elysia()
       type ClosestEntry = { name: string; number: string; string_distance: number; number_difference: number };
 
       const results = draws.map((draw) => {
-        if (draw.winner_name !== null) return draw;
-        const pool = entries.filter((e) => e.number.length === draw.winning_number.length);
-        if (pool.length === 0) return draw;
+        const wn = draw.winning_number;
+        // Extract the relevant suffix from a user's 6-digit number for this prize rank
+        const suffix = (num: string) =>
+          draw.prize_rank === 1 ? num : draw.prize_rank === 2 ? num.slice(-3) : num.slice(-2);
 
-        const scored = pool.map((e) => ({
-          name: e.name,
-          number: e.number,
-          string_distance: levenshtein(draw.winning_number, e.number),
-          number_difference: Math.abs(parseInt(draw.winning_number, 10) - parseInt(e.number, 10)),
+        const winners = entries.filter((e) => suffix(e.number) === wn);
+
+        if (winners.length > 0 || entries.length === 0) {
+          return { ...draw, winners, closest_by_string: null, closest_by_number: null };
+        }
+
+        const scored = entries.map((e) => ({
+          name: e.name, number: e.number,
+          string_distance: levenshtein(wn, suffix(e.number)),
+          number_difference: Math.abs(parseInt(wn, 10) - parseInt(suffix(e.number), 10)),
         }));
-
         const byString = scored.reduce((best, cur) =>
           cur.string_distance < best.string_distance ||
           (cur.string_distance === best.string_distance && cur.number_difference < best.number_difference)
@@ -396,11 +389,10 @@ const app = new Elysia()
           (cur.number_difference === best.number_difference && cur.string_distance < best.string_distance)
             ? cur : best
         );
-
         return {
-          ...draw,
-          closest_by_string: byString,
-          closest_by_number: byNumber.number !== byString.number ? byNumber : null,
+          ...draw, winners,
+          closest_by_string: byString as ClosestEntry,
+          closest_by_number: (byNumber.number !== byString.number ? byNumber : null) as ClosestEntry | null,
         };
       });
 
