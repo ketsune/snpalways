@@ -52,6 +52,21 @@ const router = createRouter({
       name: 'matchmaking-moderate',
       component: () => import('../views/MatchmakingModerateView.vue'),
     },
+    {
+      path: '/lottery',
+      name: 'lottery',
+      component: () => import('../views/LotteryView.vue'),
+    },
+    {
+      path: '/lottery/board',
+      name: 'lottery-board',
+      component: () => import('../views/LotteryBoardView.vue'),
+    },
+    {
+      path: '/lottery/moderate',
+      name: 'lottery-moderate',
+      component: () => import('../views/LotteryModerateView.vue'),
+    },
     // todo add video presentation
     // todo pre wedding photo
     // todo seat plan

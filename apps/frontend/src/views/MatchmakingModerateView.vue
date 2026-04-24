@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { apiUrl } from '@/lib/api'
+import { apiFetch } from '@/lib/api'
 
 type Submission = {
   id: number
@@ -24,7 +24,7 @@ async function load() {
   loading.value = true
   error.value = null
   try {
-    const res = await fetch(apiUrl('/api/matchmaking/all'), {
+    const res = await apiFetch('/api/matchmaking/all', {
       headers: { 'x-mod-token': token.value },
     })
     const data = await res.json().catch(() => ({}))
@@ -45,7 +45,7 @@ async function load() {
 
 async function setApproved(id: number, approved: boolean) {
   try {
-    const res = await fetch(apiUrl(`/api/matchmaking/${id}`), {
+    const res = await apiFetch(`/api/matchmaking/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'x-mod-token': token.value },
       body: JSON.stringify({ approved }),
