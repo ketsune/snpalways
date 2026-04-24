@@ -2,27 +2,23 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { apiFetch } from '@/lib/api'
 
-type ClosestEntry = {
-  name: string
-  number: string
-  string_distance: number
-  number_difference: number
-}
-
+type ClosestEntry = { name: string; number: string; string_distance: number; number_difference: number }
 type DrawResult = {
   prize_rank: number
   winning_number: string
-  winner_name: string | null
   drawn_at: string
-  closest_by_string?: ClosestEntry | null
-  closest_by_number?: ClosestEntry | null
+  winners: { name: string; number: string }[]
+  closest_by_string: ClosestEntry | null
+  closest_by_number: ClosestEntry | null
 }
 
-const PRIZE_CONFIG: Record<number, { label: string; digits: number; accent: string }> = {
+type Rank = 1 | 2 | 3
+const PRIZE_CONFIG: Record<Rank, { label: string; digits: number; accent: string }> = {
   1: { label: '1st Prize', digits: 6, accent: '#f59e0b' },
   2: { label: '2nd Prize', digits: 3, accent: '#e2e8f0' },
   3: { label: '3rd Prize', digits: 2, accent: '#b45309' },
 }
+const cfg = (rank: number) => PRIZE_CONFIG[rank as Rank]
 
 const results = ref<DrawResult[]>([])
 const displayNumbers = ref<Record<number, string>>({})
@@ -63,7 +59,7 @@ async function pollResults() {
           displayNumbers.value[r.prize_rank] = r.winning_number
           states.value[r.prize_rank] = 'revealed'
         } else {
-          spinDigits(r.prize_rank, PRIZE_CONFIG[r.prize_rank].digits, r.winning_number)
+          spinDigits(r.prize_rank, cfg(r.prize_rank).digits, r.winning_number)
         }
       }
     }
@@ -95,21 +91,21 @@ function getResult(rank: number): DrawResult | undefined {
 
     <div class="w-full max-w-2xl space-y-6">
       <div
-        v-for="rank in [1, 2, 3]"
+        v-for="rank in ([1, 2, 3] as Rank[])"
         :key="rank"
         class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur px-8 py-7 text-center"
         :class="states[rank] === 'revealed' ? 'ring-1 ring-white/20' : ''"
       >
         <!-- Prize label -->
-        <p class="text-xs font-bold uppercase tracking-[0.25em] mb-4" :style="{ color: PRIZE_CONFIG[rank].accent }">
-          {{ PRIZE_CONFIG[rank].label }}
+        <p class="text-xs font-bold uppercase tracking-[0.25em] mb-4" :style="{ color: cfg(rank).accent }">
+          {{ cfg(rank).label }}
         </p>
 
         <!-- Digit display -->
         <div class="flex items-center justify-center gap-2 sm:gap-3 mb-5">
           <template v-if="states[rank] === 'pending'">
             <div
-              v-for="i in PRIZE_CONFIG[rank].digits"
+              v-for="i in cfg(rank).digits"
               :key="i"
               class="flex h-14 w-10 sm:h-20 sm:w-16 items-center justify-center rounded-xl bg-white/10 font-mono text-2xl sm:text-4xl font-bold text-white/20"
             >?</div>
@@ -121,24 +117,30 @@ function getResult(rank: number): DrawResult | undefined {
               class="flex h-14 w-10 sm:h-20 sm:w-16 items-center justify-center rounded-xl font-mono text-2xl sm:text-4xl font-bold transition-all duration-100"
               :class="states[rank] === 'spinning' ? 'bg-white/20 text-white/80' : 'text-white'"
               :style="states[rank] === 'revealed'
-                ? { background: `${PRIZE_CONFIG[rank].accent}22`, color: PRIZE_CONFIG[rank].accent, boxShadow: `0 0 20px ${PRIZE_CONFIG[rank].accent}44` }
+                ? { background: `${cfg(rank).accent}22`, color: cfg(rank).accent, boxShadow: `0 0 20px ${cfg(rank).accent}44` }
                 : {}"
             >{{ digit }}</div>
           </template>
         </div>
 
-        <!-- Winner / closest -->
+        <!-- Winners / closest -->
         <template v-if="states[rank] === 'revealed'">
-          <!-- Exact winner -->
-          <p v-if="getResult(rank)?.winner_name" class="text-lg sm:text-2xl font-semibold text-white">
-            🎉 {{ getResult(rank)!.winner_name }}
-          </p>
+          <!-- Winners (multiple possible for 2nd/3rd) -->
+          <div v-if="getResult(rank)?.winners.length" class="space-y-1">
+            <p
+              v-for="w in getResult(rank)!.winners"
+              :key="w.number"
+              class="text-lg sm:text-2xl font-semibold text-white"
+            >
+              🎉 {{ w.name }}
+              <span class="font-mono text-sm font-normal opacity-50">{{ w.number }}</span>
+            </p>
+          </div>
 
-          <!-- No exact winner — show closest -->
+          <!-- No winner — closest match -->
           <template v-else-if="getResult(rank)?.closest_by_string || getResult(rank)?.closest_by_number">
-            <p class="text-gray-500 text-xs uppercase tracking-widest mb-3">No exact winner — closest match</p>
+            <p class="text-gray-500 text-xs uppercase tracking-widest mb-3">No winner — closest match</p>
 
-            <!-- closest_by_string (always shown when no winner) -->
             <div
               v-if="getResult(rank)?.closest_by_string"
               class="rounded-xl border border-white/10 bg-white/5 px-5 py-3 mb-2 text-left"
@@ -153,7 +155,6 @@ function getResult(rank: number): DrawResult | undefined {
               </div>
             </div>
 
-            <!-- closest_by_number (only when different person) -->
             <div
               v-if="getResult(rank)?.closest_by_number"
               class="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-left"
@@ -170,7 +171,7 @@ function getResult(rank: number): DrawResult | undefined {
             </div>
           </template>
 
-          <p v-else class="text-gray-600 text-sm">No winner · No entries for this prize</p>
+          <p v-else class="text-gray-600 text-sm">No winner</p>
         </template>
 
         <div v-else class="text-gray-600 text-sm">Awaiting draw…</div>

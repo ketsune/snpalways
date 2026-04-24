@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { apiFetch } from '@/lib/api'
 
 const name = ref('')
@@ -7,14 +7,6 @@ const number = ref('')
 const loading = ref(false)
 const success = ref<string | null>(null)
 const error = ref<string | null>(null)
-
-const prizeTier = computed(() => {
-  const n = number.value.replace(/\s/g, '')
-  if (n.length === 6 && /^\d{6}$/.test(n)) return { label: '1st Prize', color: 'text-yellow-600' }
-  if (n.length === 3 && /^\d{3}$/.test(n)) return { label: '2nd Prize', color: 'text-gray-500' }
-  if (n.length === 2 && /^\d{2}$/.test(n)) return { label: '3rd Prize', color: 'text-amber-700' }
-  return null
-})
 
 async function submit() {
   success.value = null
@@ -43,12 +35,12 @@ async function submit() {
   <main class="min-h-screen bg-off-white text-gray-800">
     <section class="mx-auto max-w-md px-4 py-12 sm:py-16">
       <h1 class="font-cookie text-5xl sm:text-6xl text-rose-600">Lucky Draw</h1>
-      <p class="mt-3 text-gray-600">Pick your lucky number and join the draw at the reception!</p>
+      <p class="mt-3 text-gray-600">Pick your lucky 6-digit number and join the draw at the reception!</p>
 
       <div class="mt-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm text-sm text-gray-600 space-y-1">
-        <p><span class="font-semibold text-yellow-600">1st Prize</span> — 6-digit number (e.g. 391047)</p>
-        <p><span class="font-semibold text-gray-500">2nd Prize</span> — 3-digit number (e.g. 582)</p>
-        <p><span class="font-semibold text-amber-700">3rd Prize</span> — 2-digit number (e.g. 74)</p>
+        <p><span class="font-semibold text-yellow-600">1st Prize</span> — exact 6-digit match</p>
+        <p><span class="font-semibold text-gray-500">2nd Prize</span> — last 3 digits match</p>
+        <p><span class="font-semibold text-amber-700">3rd Prize</span> — last 2 digits match</p>
         <p class="pt-1 text-xs text-gray-400">Each number is unique — first come, first served.</p>
       </div>
 
@@ -66,28 +58,23 @@ async function submit() {
         </div>
 
         <div>
-          <label for="number" class="block text-sm font-medium text-gray-700">
-            Your lucky number
-            <span v-if="prizeTier" :class="['ml-2 text-xs font-semibold', prizeTier.color]">
-              → {{ prizeTier.label }}
-            </span>
-          </label>
+          <label for="number" class="block text-sm font-medium text-gray-700">Your lucky 6-digit number</label>
           <input
             id="number"
             v-model="number"
             required
             type="text"
             inputmode="numeric"
-            pattern="\d*"
+            pattern="\d{6}"
             maxlength="6"
-            placeholder="2, 3, or 6 digits"
-            class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2.5 font-mono text-lg tracking-widest shadow-sm placeholder:text-gray-400 placeholder:text-base placeholder:tracking-normal focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
+            placeholder="e.g. 391047"
+            class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2.5 font-mono text-2xl tracking-widest shadow-sm placeholder:text-base placeholder:tracking-normal placeholder:text-gray-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
           />
         </div>
 
         <button
           type="submit"
-          :disabled="loading || !prizeTier"
+          :disabled="loading || number.length !== 6"
           class="inline-flex items-center rounded-full bg-rose-600 px-6 py-3 text-white shadow hover:bg-rose-700 disabled:opacity-50"
         >
           {{ loading ? 'Submitting…' : 'Join the draw' }}
