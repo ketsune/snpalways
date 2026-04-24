@@ -18,11 +18,13 @@ type DrawResult = {
   closest_by_number?: ClosestEntry | null
 }
 
-const PRIZE_CONFIG: Record<number, { label: string; digits: number; accent: string }> = {
+type Rank = 1 | 2 | 3
+const PRIZE_CONFIG: Record<Rank, { label: string; digits: number; accent: string }> = {
   1: { label: '1st Prize', digits: 6, accent: '#f59e0b' },
   2: { label: '2nd Prize', digits: 3, accent: '#e2e8f0' },
   3: { label: '3rd Prize', digits: 2, accent: '#b45309' },
 }
+const cfg = (rank: number) => PRIZE_CONFIG[rank as Rank]
 
 const results = ref<DrawResult[]>([])
 const displayNumbers = ref<Record<number, string>>({})
@@ -63,7 +65,7 @@ async function pollResults() {
           displayNumbers.value[r.prize_rank] = r.winning_number
           states.value[r.prize_rank] = 'revealed'
         } else {
-          spinDigits(r.prize_rank, PRIZE_CONFIG[r.prize_rank].digits, r.winning_number)
+          spinDigits(r.prize_rank, cfg(r.prize_rank).digits, r.winning_number)
         }
       }
     }
@@ -101,15 +103,15 @@ function getResult(rank: number): DrawResult | undefined {
         :class="states[rank] === 'revealed' ? 'ring-1 ring-white/20' : ''"
       >
         <!-- Prize label -->
-        <p class="text-xs font-bold uppercase tracking-[0.25em] mb-4" :style="{ color: PRIZE_CONFIG[rank].accent }">
-          {{ PRIZE_CONFIG[rank].label }}
+        <p class="text-xs font-bold uppercase tracking-[0.25em] mb-4" :style="{ color: cfg(rank).accent }">
+          {{ cfg(rank).label }}
         </p>
 
         <!-- Digit display -->
         <div class="flex items-center justify-center gap-2 sm:gap-3 mb-5">
           <template v-if="states[rank] === 'pending'">
             <div
-              v-for="i in PRIZE_CONFIG[rank].digits"
+              v-for="i in cfg(rank).digits"
               :key="i"
               class="flex h-14 w-10 sm:h-20 sm:w-16 items-center justify-center rounded-xl bg-white/10 font-mono text-2xl sm:text-4xl font-bold text-white/20"
             >?</div>
@@ -121,7 +123,7 @@ function getResult(rank: number): DrawResult | undefined {
               class="flex h-14 w-10 sm:h-20 sm:w-16 items-center justify-center rounded-xl font-mono text-2xl sm:text-4xl font-bold transition-all duration-100"
               :class="states[rank] === 'spinning' ? 'bg-white/20 text-white/80' : 'text-white'"
               :style="states[rank] === 'revealed'
-                ? { background: `${PRIZE_CONFIG[rank].accent}22`, color: PRIZE_CONFIG[rank].accent, boxShadow: `0 0 20px ${PRIZE_CONFIG[rank].accent}44` }
+                ? { background: `${cfg(rank).accent}22`, color: cfg(rank).accent, boxShadow: `0 0 20px ${cfg(rank).accent}44` }
                 : {}"
             >{{ digit }}</div>
           </template>

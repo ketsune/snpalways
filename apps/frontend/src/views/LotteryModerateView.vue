@@ -13,11 +13,13 @@ type DrawResult = {
   closest_by_number?: ClosestEntry | null
 }
 
-const PRIZE_CONFIG: Record<number, { label: string; digits: number }> = {
+type Rank = 1 | 2 | 3
+const PRIZE_CONFIG: Record<Rank, { label: string; digits: number }> = {
   1: { label: '1st Prize', digits: 6 },
   2: { label: '2nd Prize', digits: 3 },
   3: { label: '3rd Prize', digits: 2 },
 }
+const cfg = (rank: number) => PRIZE_CONFIG[rank as Rank]
 
 const token = ref('')
 const authed = ref(false)
@@ -118,7 +120,7 @@ function getResult(rank: number) {
 }
 
 function entriesForRank(rank: number) {
-  return entries.value.filter((e) => e.number.length === PRIZE_CONFIG[rank].digits)
+  return entries.value.filter((e) => e.number.length === cfg(rank).digits)
 }
 </script>
 
@@ -220,7 +222,7 @@ function entriesForRank(rank: number) {
               :key="rank"
               class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm text-center"
             >
-              <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">{{ PRIZE_CONFIG[rank].label }}</p>
+              <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">{{ cfg(rank).label }}</p>
 
               <template v-if="getResult(rank)">
                 <p class="font-mono text-3xl font-bold tracking-widest text-gray-900">
@@ -254,14 +256,14 @@ function entriesForRank(rank: number) {
               </template>
               <template v-else>
                 <p class="font-mono text-3xl font-bold tracking-widest text-gray-200 mb-3">
-                  {{ '?'.repeat(PRIZE_CONFIG[rank].digits) }}
+                  {{ '?'.repeat(cfg(rank).digits) }}
                 </p>
                 <button
                   :disabled="drawing !== null || drawnRanks.has(rank)"
                   class="rounded-full bg-rose-600 px-4 py-2 text-sm text-white hover:bg-rose-700 disabled:opacity-50"
                   @click="draw(rank)"
                 >
-                  {{ drawing === rank ? 'Drawing…' : `Draw ${PRIZE_CONFIG[rank].label}` }}
+                  {{ drawing === rank ? 'Drawing…' : `Draw ${cfg(rank).label}` }}
                 </button>
               </template>
             </div>
@@ -271,9 +273,9 @@ function entriesForRank(rank: number) {
         <!-- Entries by tier -->
         <div v-for="rank in [1, 2, 3]" :key="`entries-${rank}`">
           <h2 class="text-base font-semibold text-gray-700 mb-3">
-            {{ PRIZE_CONFIG[rank].label }} entries
+            {{ cfg(rank).label }} entries
             <span class="ml-2 text-xs font-normal text-gray-400">
-              ({{ PRIZE_CONFIG[rank].digits }} digits · {{ entriesForRank(rank).length }} registered)
+              ({{ cfg(rank).digits }} digits · {{ entriesForRank(rank).length }} registered)
             </span>
           </h2>
           <div class="flex flex-wrap gap-2">
