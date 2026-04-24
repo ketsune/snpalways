@@ -278,6 +278,24 @@ const app = new Elysia()
       number: t.String({ minLength: 1, maxLength: 6 }),
     })
   })
+  .get('/api/lottery/numbers', async ({ headers, set }) => {
+    const authErr = requireServiceKey(headers, set);
+    if (authErr) return authErr;
+    try {
+      const rows = await Effect.runPromise(
+        Effect.gen(function* () {
+          const sql = yield* SqlClient.SqlClient;
+          return yield* sql<{ number: string }>`
+            select number from lottery_entries
+          `;
+        }).pipe(Effect.provide(LiveDatabase))
+      );
+      return { success: true, numbers: rows.map(r => r.number) };
+    } catch (error) {
+      console.error('Failed to fetch lottery numbers', error);
+      return { success: false, message: 'Failed to fetch numbers.' };
+    }
+  })
   .get('/api/lottery/entries', async ({ headers, set }) => {
     const token = process.env.MODERATE_KEY;
     if (!token || headers['x-mod-token'] !== token) {
