@@ -26,3 +26,23 @@ export const matchmakingSubmissions = pgTable('matchmaking_submissions', {
 
 export type InsertMatchmakingSubmission = typeof matchmakingSubmissions.$inferInsert;
 export type SelectMatchmakingSubmission = typeof matchmakingSubmissions.$inferSelect;
+
+export const lotteryEntries = pgTable('lottery_entries', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  number: text('number').notNull().unique(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type InsertLotteryEntry = typeof lotteryEntries.$inferInsert;
+export type SelectLotteryEntry = typeof lotteryEntries.$inferSelect;
+
+export const lotteryDraws = pgTable('lottery_draws', {
+  id: serial('id').primaryKey(),
+  prizeRank: integer('prize_rank').notNull().unique(),
+  winningNumber: text('winning_number').notNull(),
+  drawnAt: timestamp('drawn_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type InsertLotteryDraw = typeof lotteryDraws.$inferInsert;
+export type SelectLotteryDraw = typeof lotteryDraws.$inferSelect;
