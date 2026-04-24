@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { apiUrl } from '@/lib/api'
+import { apiFetch } from '@/lib/api'
 
 type Entry = { id: number; name: string; number: string; created_at: string }
 type ClosestEntry = { name: string; number: string; string_distance: number; number_difference: number }
@@ -38,8 +38,8 @@ async function load() {
   error.value = null
   try {
     const [entryRes, resultRes] = await Promise.all([
-      fetch(apiUrl('/api/lottery/entries'), { headers: { 'x-mod-token': token.value } }),
-      fetch(apiUrl('/api/lottery/results')),
+      apiFetch('/api/lottery/entries', { headers: { 'x-mod-token': token.value } }),
+      apiFetch('/api/lottery/results'),
     ])
     if (entryRes.status === 401) { error.value = 'Invalid moderator token.'; return }
     const entryData = await entryRes.json().catch(() => ({}))
@@ -59,7 +59,7 @@ async function draw(prizeRank: number) {
   drawError.value = null
   drawing.value = prizeRank
   try {
-    const res = await fetch(apiUrl('/api/lottery/draw'), {
+    const res = await apiFetch('/api/lottery/draw', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-mod-token': token.value },
       body: JSON.stringify({ prizeRank }),
@@ -77,7 +77,7 @@ async function draw(prizeRank: number) {
 
 async function resetDraws() {
   try {
-    const res = await fetch(apiUrl('/api/lottery/draws'), {
+    const res = await apiFetch('/api/lottery/draws', {
       method: 'DELETE',
       headers: { 'x-mod-token': token.value },
     })
@@ -94,7 +94,7 @@ async function fullReset() {
   fullResetBusy.value = true
   drawError.value = null
   try {
-    const res = await fetch(apiUrl('/api/lottery'), {
+    const res = await apiFetch('/api/lottery', {
       method: 'DELETE',
       headers: { 'x-mod-token': token.value },
     })

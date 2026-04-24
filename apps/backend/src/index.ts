@@ -13,6 +13,18 @@ function levenshtein(a: string, b: string): number {
         : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
   return dp[m][n];
 }
+
+function requireServiceKey(
+  headers: Record<string, string | undefined>,
+  set: { status?: number | string },
+): { success: false; message: string } | null {
+  const key = process.env.SECRET_SERVICE_KEY;
+  if (key && headers['x-service-key'] !== key) {
+    set.status = 401;
+    return { success: false, message: 'Unauthorized' };
+  }
+  return null;
+}
 import { cors } from "@elysiajs/cors";
 import { Effect } from "effect";
 import { SqlClient } from "@effect/sql";
@@ -29,7 +41,7 @@ const dbHealthCheck = Effect.gen(function* () {
 const app = new Elysia()
   .use(cors({
     origin: process.env.CORS_ORIGIN || true,
-    allowedHeaders: ['Content-Type', 'x-mod-token'],
+    allowedHeaders: ['Content-Type', 'x-mod-token', 'x-service-key'],
   }))
   .get('/api/greeting', () => ({
     message: "Welcome to our wedding website API!"
@@ -46,7 +58,9 @@ const app = new Elysia()
       return { status: "error", message: "Database connection failed" };
     }
   })
-  .post('/api/rsvp', async ({ body }) => {
+  .post('/api/rsvp', async ({ body, headers, set }) => {
+    const authErr = requireServiceKey(headers, set);
+    if (authErr) return authErr;
     try {
       const result = await Effect.runPromise(
         Effect.gen(function* () {
@@ -79,7 +93,9 @@ const app = new Elysia()
       message: t.Optional(t.String())
     })
   })
-  .get('/api/rsvps', async () => {
+  .get('/api/rsvps', async ({ headers, set }) => {
+    const authErr = requireServiceKey(headers, set);
+    if (authErr) return authErr;
     try {
       const rows = await Effect.runPromise(
         Effect.gen(function* () {
@@ -97,7 +113,9 @@ const app = new Elysia()
     }
   })
   // Reject photo payloads larger than ~1.5MB of raw bytes (base64 adds ~33% overhead).
-  .post('/api/matchmaking', async ({ body, set }) => {
+  .post('/api/matchmaking', async ({ body, headers, set }) => {
+    const authErr = requireServiceKey(headers, set);
+    if (authErr) return authErr;
     if (body.photoBase64 && body.photoBase64.length > 2_200_000) {
       set.status = 413;
       return { success: false, message: 'Photo too large. Please pick a smaller image.' };
@@ -137,7 +155,9 @@ const app = new Elysia()
       photoBase64: t.Optional(t.String())
     })
   })
-  .get('/api/matchmaking', async () => {
+  .get('/api/matchmaking', async ({ headers, set }) => {
+    const authErr = requireServiceKey(headers, set);
+    if (authErr) return authErr;
     try {
       const rows = await Effect.runPromise(
         Effect.gen(function* () {
@@ -222,7 +242,9 @@ const app = new Elysia()
     body: t.Object({ approved: t.Boolean() })
   })
   // --- Lottery ---
-  .post('/api/lottery', async ({ body, set }) => {
+  .post('/api/lottery', async ({ body, headers, set }) => {
+    const authErr = requireServiceKey(headers, set);
+    if (authErr) return authErr;
     const num = body.number.trim();
     if (!/^\d+$/.test(num) || ![2, 3, 6].includes(num.length)) {
       set.status = 400;
@@ -328,7 +350,9 @@ const app = new Elysia()
   }, {
     body: t.Object({ prizeRank: t.Number() })
   })
-  .get('/api/lottery/results', async () => {
+  .get('/api/lottery/results', async ({ headers, set }) => {
+    const authErr = requireServiceKey(headers, set);
+    if (authErr) return authErr;
     try {
       const { draws, entries } = await Effect.runPromise(
         Effect.gen(function* () {
@@ -362,12 +386,12 @@ const app = new Elysia()
           number_difference: Math.abs(parseInt(draw.winning_number, 10) - parseInt(e.number, 10)),
         }));
 
-        const byString = scored.reduce<ClosestEntry>((best, cur) =>
+        const byString = scored.reduce((best, cur) =>
           cur.string_distance < best.string_distance ||
           (cur.string_distance === best.string_distance && cur.number_difference < best.number_difference)
             ? cur : best
         );
-        const byNumber = scored.reduce<ClosestEntry>((best, cur) =>
+        const byNumber = scored.reduce((best, cur) =>
           cur.number_difference < best.number_difference ||
           (cur.number_difference === best.number_difference && cur.string_distance < best.string_distance)
             ? cur : best

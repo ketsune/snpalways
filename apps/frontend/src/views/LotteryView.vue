@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { apiUrl } from '@/lib/api'
+import { apiFetch } from '@/lib/api'
 
 const name = ref('')
 const number = ref('')
@@ -21,7 +21,7 @@ async function submit() {
   error.value = null
   loading.value = true
   try {
-    const res = await fetch(apiUrl('/api/lottery'), {
+    const res = await apiFetch('/api/lottery', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name.value.trim(), number: number.value.trim() }),

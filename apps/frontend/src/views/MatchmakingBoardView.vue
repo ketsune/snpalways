@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { apiUrl } from '@/lib/api'
+import { apiFetch } from '@/lib/api'
 
 type Submission = {
   id: number
@@ -19,7 +19,7 @@ let pollTimer: ReturnType<typeof setInterval> | null = null
 
 async function load() {
   try {
-    const res = await fetch(apiUrl('/api/matchmaking'))
+    const res = await apiFetch('/api/matchmaking')
     const data = await res.json()
     if (!res.ok || !data?.success) throw new Error(data?.message || 'Failed to load')
     submissions.value = data.submissions as Submission[]

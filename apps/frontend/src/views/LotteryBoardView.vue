@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { apiUrl } from '@/lib/api'
+import { apiFetch } from '@/lib/api'
 
 type ClosestEntry = {
   name: string
@@ -51,7 +51,7 @@ function spinDigits(rank: number, digitCount: number, finalNumber: string) {
 
 async function pollResults() {
   try {
-    const res = await fetch(apiUrl('/api/lottery/results'))
+    const res = await apiFetch('/api/lottery/results')
     const data = await res.json().catch(() => ({}))
     if (!data.success) return
 
