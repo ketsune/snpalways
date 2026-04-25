@@ -2,14 +2,11 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { apiFetch } from '@/lib/api'
 
-type ClosestEntry = { name: string; number: string; string_distance: number; number_difference: number }
 type DrawResult = {
   prize_rank: number
   winning_number: string
   drawn_at: string
   winners: { name: string; number: string }[]
-  closest_by_string: ClosestEntry | null
-  closest_by_number: ClosestEntry | null
 }
 
 type Rank = 1 | 2 | 3
@@ -141,9 +138,8 @@ function getResult(rank: number): DrawResult | undefined {
           </template>
         </div>
 
-        <!-- Winners / closest -->
+        <!-- Winners -->
         <template v-if="states[rank] === 'revealed'">
-          <!-- Winners (multiple possible for 2nd/3rd) -->
           <div v-if="getResult(rank)?.winners.length" class="space-y-1">
             <p
               v-for="w in getResult(rank)!.winners"
@@ -154,41 +150,6 @@ function getResult(rank: number): DrawResult | undefined {
               <span class="font-mono text-sm font-normal opacity-50">{{ w.number }}</span>
             </p>
           </div>
-
-          <!-- No winner — closest match -->
-          <template v-else-if="getResult(rank)?.closest_by_string || getResult(rank)?.closest_by_number">
-            <p class="text-gray-500 text-xs uppercase tracking-widest mb-3">No winner — closest match</p>
-
-            <div
-              v-if="getResult(rank)?.closest_by_string"
-              class="rounded-xl border border-white/10 bg-white/5 px-5 py-3 mb-2 text-left"
-            >
-              <div class="flex items-baseline justify-between gap-4">
-                <span class="font-semibold text-white">{{ getResult(rank)!.closest_by_string!.name }}</span>
-                <span class="font-mono text-gray-400 text-sm">{{ getResult(rank)!.closest_by_string!.number }}</span>
-              </div>
-              <div class="mt-1 flex gap-4 text-xs text-gray-500">
-                <span>Str sim: <span class="text-amber-400 font-semibold">{{ ((1 - getResult(rank)!.closest_by_string!.string_distance) * 100).toFixed(1) }}%</span></span>
-                <span>Num diff: <span class="text-amber-400 font-semibold">{{ getResult(rank)!.closest_by_string!.number_difference }}</span></span>
-              </div>
-            </div>
-
-            <div
-              v-if="getResult(rank)?.closest_by_number"
-              class="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-left"
-            >
-              <p class="text-xs text-gray-600 mb-1 uppercase tracking-wider">Closest by number</p>
-              <div class="flex items-baseline justify-between gap-4">
-                <span class="font-semibold text-white">{{ getResult(rank)!.closest_by_number!.name }}</span>
-                <span class="font-mono text-gray-400 text-sm">{{ getResult(rank)!.closest_by_number!.number }}</span>
-              </div>
-              <div class="mt-1 flex gap-4 text-xs text-gray-500">
-                <span>Str sim: <span class="text-sky-400 font-semibold">{{ ((1 - getResult(rank)!.closest_by_number!.string_distance) * 100).toFixed(1) }}%</span></span>
-                <span>Num diff: <span class="text-sky-400 font-semibold">{{ getResult(rank)!.closest_by_number!.number_difference }}</span></span>
-              </div>
-            </div>
-          </template>
-
           <p v-else class="text-gray-600 text-sm">No winner</p>
         </template>
 
