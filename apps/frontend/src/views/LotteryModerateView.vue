@@ -3,14 +3,11 @@ import { ref, computed } from 'vue'
 import { apiFetch } from '@/lib/api'
 
 type Entry = { id: number; name: string; number: string; created_at: string }
-type ClosestEntry = { name: string; number: string; string_distance: number; number_difference: number }
 type DrawResult = {
   prize_rank: number
   winning_number: string
   drawn_at: string
   winners: { name: string; number: string }[]
-  closest_by_string: ClosestEntry | null
-  closest_by_number: ClosestEntry | null
 }
 
 type Rank = 1 | 2 | 3
@@ -218,28 +215,7 @@ const winnerNumbers = computed(() => {
                     🎉 {{ w.name }}
                   </p>
                 </div>
-                <template v-else>
-                  <p class="text-gray-400 text-xs mb-1">No winner</p>
-                  <div v-if="getResult(rank)!.closest_by_string" class="text-left text-xs mt-2 rounded-lg bg-amber-50 px-3 py-2">
-                    <p class="font-semibold text-gray-700">{{ getResult(rank)!.closest_by_string!.name }}
-                      <span class="font-mono font-normal text-gray-400 ml-1">{{ getResult(rank)!.closest_by_string!.number }}</span>
-                    </p>
-                    <p class="text-gray-500 mt-0.5">
-                      Sim: {{ ((1 - getResult(rank)!.closest_by_string!.string_distance) * 100).toFixed(1) }}% ·
-                      Diff: {{ getResult(rank)!.closest_by_string!.number_difference }}
-                    </p>
-                  </div>
-                  <div v-if="getResult(rank)!.closest_by_number" class="text-left text-xs mt-1 rounded-lg bg-sky-50 px-3 py-2">
-                    <p class="text-gray-500 mb-0.5">Closest by number</p>
-                    <p class="font-semibold text-gray-700">{{ getResult(rank)!.closest_by_number!.name }}
-                      <span class="font-mono font-normal text-gray-400 ml-1">{{ getResult(rank)!.closest_by_number!.number }}</span>
-                    </p>
-                    <p class="text-gray-500 mt-0.5">
-                      Sim: {{ ((1 - getResult(rank)!.closest_by_number!.string_distance) * 100).toFixed(1) }}% ·
-                      Diff: {{ getResult(rank)!.closest_by_number!.number_difference }}
-                    </p>
-                  </div>
-                </template>
+                <p v-else class="text-gray-400 text-xs">No winner</p>
               </template>
               <template v-else>
                 <p class="font-mono text-3xl font-bold tracking-widest text-gray-200 mb-3">
