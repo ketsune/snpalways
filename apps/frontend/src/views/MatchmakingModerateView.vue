@@ -19,6 +19,8 @@ const authed = ref(false)
 const loading = ref(false)
 const error = ref<string | null>(null)
 const submissions = ref<Submission[]>([])
+const deleteAllModal = ref(false)
+const deleteAllBusy = ref(false)
 
 async function load() {
   loading.value = true
@@ -43,6 +45,25 @@ async function load() {
   }
 }
 
+async function deleteAll() {
+  deleteAllBusy.value = true
+  error.value = null
+  try {
+    const res = await apiFetch('/api/matchmaking', {
+      method: 'DELETE',
+      headers: { 'x-mod-token': token.value },
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok || !data?.success) throw new Error(data?.message || 'Failed to delete')
+    submissions.value = []
+    deleteAllModal.value = false
+  } catch (err: unknown) {
+    error.value = err instanceof Error ? err.message : 'Failed to delete'
+  } finally {
+    deleteAllBusy.value = false
+  }
+}
+
 async function setApproved(id: number, approved: boolean) {
   try {
     const res = await apiFetch(`/api/matchmaking/${id}`, {
@@ -62,6 +83,36 @@ async function setApproved(id: number, approved: boolean) {
 
 <template>
   <main class="min-h-screen bg-off-white px-4 py-10">
+
+    <!-- Delete All Confirmation Modal -->
+    <Teleport to="body">
+      <div
+        v-if="deleteAllModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        @click.self="deleteAllModal = false"
+      >
+        <div class="mx-4 w-full max-w-md rounded-2xl bg-white p-7 shadow-xl">
+          <h2 class="text-xl font-bold text-gray-900">Delete all submissions?</h2>
+          <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+            This will permanently delete <strong>all matchmaking submissions</strong>.
+            Use this only for demo purposes. This cannot be undone.
+          </p>
+          <div class="mt-6 flex justify-end gap-3">
+            <button
+              class="rounded-full border border-gray-300 px-5 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              :disabled="deleteAllBusy"
+              @click="deleteAllModal = false"
+            >Cancel</button>
+            <button
+              class="rounded-full bg-red-600 px-5 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-50"
+              :disabled="deleteAllBusy"
+              @click="deleteAll"
+            >{{ deleteAllBusy ? 'Deleting…' : 'Yes, delete everything' }}</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
     <section class="mx-auto max-w-4xl">
       <h1 class="font-cookie text-5xl text-rose-600">Matchmaking Moderation</h1>
       <p class="mt-2 text-gray-600">Take down submissions before they show on the big screen.</p>
@@ -88,12 +139,13 @@ async function setApproved(id: number, approved: boolean) {
       <div v-if="authed" class="mt-8 space-y-4">
         <div class="flex items-center justify-between">
           <p class="text-sm text-gray-500">{{ submissions.length }} total · {{ submissions.filter((s) => s.approved).length }} showing on screen</p>
-          <button
-            class="text-sm text-rose-700 hover:underline"
-            @click="load"
-          >
-            Refresh
-          </button>
+          <div class="flex gap-3 items-center">
+            <button class="text-sm text-rose-700 hover:underline" @click="load">Refresh</button>
+            <button
+              class="rounded-full border border-red-300 px-4 py-1 text-sm text-red-600 hover:bg-red-50"
+              @click="deleteAllModal = true"
+            >Delete all (demo)</button>
+          </div>
         </div>
 
         <article

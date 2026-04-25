@@ -14,6 +14,58 @@ function levenshtein(a: string, b: string): number {
   return dp[m][n];
 }
 
+function jaroWinkler(a: string, b: string): number {
+  if (a === b) return 1;
+  if (!a.length || !b.length) return 0;
+  const matchDist = Math.max(Math.floor(Math.max(a.length, b.length) / 2) - 1, 0);
+  const aMatched = new Array(a.length).fill(false);
+  const bMatched = new Array(b.length).fill(false);
+  let matches = 0;
+  for (let i = 0; i < a.length; i++) {
+    const lo = Math.max(0, i - matchDist);
+    const hi = Math.min(i + matchDist + 1, b.length);
+    for (let j = lo; j < hi; j++) {
+      if (bMatched[j] || a[i] !== b[j]) continue;
+      aMatched[i] = bMatched[j] = true;
+      matches++;
+      break;
+    }
+  }
+  if (!matches) return 0;
+  let t = 0, k = 0;
+  for (let i = 0; i < a.length; i++) {
+    if (!aMatched[i]) continue;
+    while (!bMatched[k]) k++;
+    if (a[i] !== b[k]) t++;
+    k++;
+  }
+  const jaro = (matches / a.length + matches / b.length + (matches - t / 2) / matches) / 3;
+  let prefix = 0;
+  for (let i = 0; i < Math.min(4, Math.min(a.length, b.length)); i++) {
+    if (a[i] === b[i]) prefix++; else break;
+  }
+  return jaro + prefix * 0.1 * (1 - jaro);
+}
+
+function jaccardSimilarity(a: string, b: string): number {
+  if (a === b) return 1;
+  const setA = new Set(a.split(''));
+  const setB = new Set(b.split(''));
+  const intersection = [...setA].filter(c => setB.has(c)).length;
+  const union = new Set([...setA, ...setB]).size;
+  return union === 0 ? 1 : intersection / union;
+}
+
+// Combined string distance (0 = identical, 1 = completely different)
+// Averages normalised Levenshtein, Jaro-Winkler distance, and Jaccard distance.
+function combinedStringDistance(a: string, b: string): number {
+  const maxLen = Math.max(a.length, b.length);
+  const levDist = maxLen > 0 ? levenshtein(a, b) / maxLen : 0;
+  const jwDist = 1 - jaroWinkler(a, b);
+  const jacDist = 1 - jaccardSimilarity(a, b);
+  return (levDist + jwDist + jacDist) / 3;
+}
+
 function requireServiceKey(
   headers: Record<string, string | undefined>,
   set: { status?: number | string },
@@ -241,6 +293,25 @@ const app = new Elysia()
   }, {
     body: t.Object({ approved: t.Boolean() })
   })
+  .delete('/api/matchmaking', async ({ headers, set }) => {
+    const token = process.env.MODERATE_KEY;
+    if (!token || headers['x-mod-token'] !== token) {
+      set.status = 401;
+      return { success: false, message: 'Unauthorized' };
+    }
+    try {
+      await Effect.runPromise(
+        Effect.gen(function* () {
+          const sql = yield* SqlClient.SqlClient;
+          yield* sql`delete from matchmaking_submissions`;
+        }).pipe(Effect.provide(LiveDatabase))
+      );
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to delete all matchmaking submissions', error);
+      return { success: false, message: 'Failed to delete submissions.' };
+    }
+  })
   // --- Lottery ---
   .post('/api/lottery', async ({ body, headers, set }) => {
     const authErr = requireServiceKey(headers, set);
@@ -394,7 +465,7 @@ const app = new Elysia()
 
         const scored = entries.map((e) => ({
           name: e.name, number: e.number,
-          string_distance: levenshtein(wn, suffix(e.number)),
+          string_distance: combinedStringDistance(wn, suffix(e.number)),
           number_difference: Math.abs(parseInt(wn, 10) - parseInt(suffix(e.number), 10)),
         }));
         const byString = scored.reduce((best, cur) =>

@@ -22,6 +22,7 @@ const cfg = (rank: number) => PRIZE_CONFIG[rank as Rank]
 
 const results = ref<DrawResult[]>([])
 const displayNumbers = ref<Record<number, string>>({})
+const revealedCount = ref<Record<number, number>>({ 1: 0, 2: 0, 3: 0 })
 const states = ref<Record<number, 'pending' | 'spinning' | 'revealed'>>({
   1: 'pending', 2: 'pending', 3: 'pending',
 })
@@ -30,19 +31,35 @@ const initialLoad = ref(true)
 
 function spinDigits(rank: number, digitCount: number, finalNumber: string) {
   states.value[rank] = 'spinning'
-  let elapsed = 0
-  const step = () => {
-    displayNumbers.value[rank] = Array.from({ length: digitCount }, () =>
-      Math.floor(Math.random() * 10),
-    ).join('')
-    elapsed += 80
-    if (elapsed < 2400) setTimeout(step, 80)
-    else {
-      displayNumbers.value[rank] = finalNumber
+  revealedCount.value[rank] = 0
+  const current = Array(digitCount).fill('?')
+  displayNumbers.value[rank] = current.join('')
+
+  const revealNext = (pos: number) => {
+    if (pos >= digitCount) {
       states.value[rank] = 'revealed'
+      return
     }
+    // Each subsequent digit spins a bit longer for escalating drama
+    const totalTicks = 14 + pos * 4
+    let ticks = 0
+    const tick = () => {
+      current[pos] = String(Math.floor(Math.random() * 10))
+      displayNumbers.value[rank] = current.join('')
+      ticks++
+      if (ticks < totalTicks) {
+        setTimeout(tick, 80)
+      } else {
+        current[pos] = finalNumber[pos]
+        displayNumbers.value[rank] = current.join('')
+        revealedCount.value[rank] = pos + 1
+        setTimeout(() => revealNext(pos + 1), 350)
+      }
+    }
+    tick()
   }
-  step()
+
+  revealNext(0)
 }
 
 async function pollResults() {
@@ -57,6 +74,7 @@ async function pollResults() {
         seenRanks.value.add(r.prize_rank)
         if (initialLoad.value) {
           displayNumbers.value[r.prize_rank] = r.winning_number
+          revealedCount.value[r.prize_rank] = cfg(r.prize_rank).digits
           states.value[r.prize_rank] = 'revealed'
         } else {
           spinDigits(r.prize_rank, cfg(r.prize_rank).digits, r.winning_number)
@@ -114,9 +132,9 @@ function getResult(rank: number): DrawResult | undefined {
             <div
               v-for="(digit, i) in (displayNumbers[rank] ?? '').split('')"
               :key="i"
-              class="flex h-14 w-10 sm:h-20 sm:w-16 items-center justify-center rounded-xl font-mono text-2xl sm:text-4xl font-bold transition-all duration-100"
-              :class="states[rank] === 'spinning' ? 'bg-white/20 text-white/80' : 'text-white'"
-              :style="states[rank] === 'revealed'
+              class="flex h-14 w-10 sm:h-20 sm:w-16 items-center justify-center rounded-xl font-mono text-2xl sm:text-4xl font-bold transition-all duration-200"
+              :class="i < (revealedCount[rank] ?? 0) ? 'text-white' : i === (revealedCount[rank] ?? 0) ? 'bg-white/20 text-white/80' : 'bg-white/10 text-white/30'"
+              :style="i < (revealedCount[rank] ?? 0)
                 ? { background: `${cfg(rank).accent}22`, color: cfg(rank).accent, boxShadow: `0 0 20px ${cfg(rank).accent}44` }
                 : {}"
             >{{ digit }}</div>
@@ -150,8 +168,8 @@ function getResult(rank: number): DrawResult | undefined {
                 <span class="font-mono text-gray-400 text-sm">{{ getResult(rank)!.closest_by_string!.number }}</span>
               </div>
               <div class="mt-1 flex gap-4 text-xs text-gray-500">
-                <span>String dist: <span class="text-amber-400 font-semibold">{{ getResult(rank)!.closest_by_string!.string_distance }}</span></span>
-                <span>Number diff: <span class="text-amber-400 font-semibold">{{ getResult(rank)!.closest_by_string!.number_difference }}</span></span>
+                <span>Str sim: <span class="text-amber-400 font-semibold">{{ ((1 - getResult(rank)!.closest_by_string!.string_distance) * 100).toFixed(1) }}%</span></span>
+                <span>Num diff: <span class="text-amber-400 font-semibold">{{ getResult(rank)!.closest_by_string!.number_difference }}</span></span>
               </div>
             </div>
 
@@ -165,8 +183,8 @@ function getResult(rank: number): DrawResult | undefined {
                 <span class="font-mono text-gray-400 text-sm">{{ getResult(rank)!.closest_by_number!.number }}</span>
               </div>
               <div class="mt-1 flex gap-4 text-xs text-gray-500">
-                <span>String dist: <span class="text-sky-400 font-semibold">{{ getResult(rank)!.closest_by_number!.string_distance }}</span></span>
-                <span>Number diff: <span class="text-sky-400 font-semibold">{{ getResult(rank)!.closest_by_number!.number_difference }}</span></span>
+                <span>Str sim: <span class="text-sky-400 font-semibold">{{ ((1 - getResult(rank)!.closest_by_number!.string_distance) * 100).toFixed(1) }}%</span></span>
+                <span>Num diff: <span class="text-sky-400 font-semibold">{{ getResult(rank)!.closest_by_number!.number_difference }}</span></span>
               </div>
             </div>
           </template>

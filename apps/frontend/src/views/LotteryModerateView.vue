@@ -225,7 +225,7 @@ const winnerNumbers = computed(() => {
                       <span class="font-mono font-normal text-gray-400 ml-1">{{ getResult(rank)!.closest_by_string!.number }}</span>
                     </p>
                     <p class="text-gray-500 mt-0.5">
-                      Str: {{ getResult(rank)!.closest_by_string!.string_distance }} ·
+                      Sim: {{ ((1 - getResult(rank)!.closest_by_string!.string_distance) * 100).toFixed(1) }}% ·
                       Diff: {{ getResult(rank)!.closest_by_string!.number_difference }}
                     </p>
                   </div>
@@ -235,7 +235,7 @@ const winnerNumbers = computed(() => {
                       <span class="font-mono font-normal text-gray-400 ml-1">{{ getResult(rank)!.closest_by_number!.number }}</span>
                     </p>
                     <p class="text-gray-500 mt-0.5">
-                      Str: {{ getResult(rank)!.closest_by_number!.string_distance }} ·
+                      Sim: {{ ((1 - getResult(rank)!.closest_by_number!.string_distance) * 100).toFixed(1) }}% ·
                       Diff: {{ getResult(rank)!.closest_by_number!.number_difference }}
                     </p>
                   </div>
