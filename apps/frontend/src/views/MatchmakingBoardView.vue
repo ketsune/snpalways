@@ -84,7 +84,6 @@ onUnmounted(() => {
           <h2 class="font-cookie text-3xl leading-tight text-rose-600">{{ entry.friend_name }}</h2>
           <p v-if="entry.bio" class="text-sm text-gray-700">{{ entry.bio }}</p>
           <p class="mt-auto text-sm font-semibold text-rose-700 break-words">{{ entry.contact }}</p>
-          <p class="text-xs text-gray-500">แนะนำโดย {{ entry.submitter_name }}</p>
         </div>
       </article>
     </section>
