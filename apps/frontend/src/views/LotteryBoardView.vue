@@ -101,7 +101,7 @@ function getResult(rank: number): DrawResult | undefined {
 
 <template>
   <main class="min-h-screen bg-[#0b0c1a] text-white flex flex-col items-center justify-center px-4 py-12">
-    <h1 class="font-cookie text-5xl sm:text-7xl text-rose-400 mb-2 tracking-wide">ลุ้นโชค</h1>
+    <h1 class="font-cookie text-5xl sm:text-7xl text-rose-400 mb-2 tracking-wide">สลากกินไม่แบ่ง กินอยู่คนเดียว</h1>
     <p class="text-gray-500 text-xs mb-10 tracking-widest uppercase">งานแต่งงานส้ม &amp; ปัณณ์</p>
 
     <div class="w-full max-w-2xl space-y-6">

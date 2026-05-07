@@ -19,8 +19,8 @@ const showHeader = computed(() => route.name !== 'landing')
           <RouterLink class="text-gray-600 hover:text-gray-900" to="/home#venue">
             Location
           </RouterLink>
-          <RouterLink class="text-gray-600 hover:text-gray-900" to="/home#contact">
-            Contact
+          <RouterLink class="text-gray-600 hover:text-gray-900" to="/matchmaking">
+            Matchmaking
           </RouterLink>
           <RouterLink class="text-gray-600 hover:text-gray-900" to="/gallery">
             Gallery

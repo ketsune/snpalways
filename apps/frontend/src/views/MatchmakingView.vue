@@ -110,7 +110,7 @@ async function submit() {
 <template>
   <main class="min-h-screen bg-off-white text-gray-800">
     <section class="mx-auto max-w-xl px-4 py-12 sm:py-16">
-      <h1 class="font-cookie text-5xl sm:text-6xl text-rose-600">มุมจับคู่</h1>
+      <h1 class="font-cookie text-5xl sm:text-6xl text-rose-600">มุมคนโสดโดยความสามารถ</h1>
       <p class="mt-3 text-gray-600">
         รู้จักเพื่อนโสดดี ๆ ไหม? บอกเราเรื่องราวของพวกเขา!
         เราจะแสดงรายชื่อบนจอใหญ่ที่งานแต่งงาน เผื่อใครสนใจทักทาย
