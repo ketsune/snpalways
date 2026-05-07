@@ -17,7 +17,7 @@ export const lotteryRoutes = new Elysia()
     const num = body.number.trim();
     if (!/^\d{6}$/.test(num)) {
       set.status = 400;
-      return { success: false, message: 'Number must be exactly 6 digits.' };
+      return { success: false, message: 'หมายเลขต้องมี 6 หลักเท่านั้น' };
     }
     try {
       const result = await Effect.runPromise(
@@ -35,10 +35,10 @@ export const lotteryRoutes = new Elysia()
     } catch (error: unknown) {
       if (isUniqueViolation(error)) {
         set.status = 409;
-        return { success: false, message: 'That number is already taken. Try a different one.' };
+        return { success: false, message: 'หมายเลขนี้ถูกใช้ไปแล้ว กรุณาเลือกหมายเลขอื่น' };
       }
       console.error('Failed to save lottery entry', error);
-      return { success: false, message: 'Failed to save entry.' };
+      return { success: false, message: 'ไม่สามารถบันทึกข้อมูลได้' };
     }
   }, {
     body: t.Object({
@@ -59,7 +59,7 @@ export const lotteryRoutes = new Elysia()
       return { success: true, numbers: rows.map(r => r.number) };
     } catch (error) {
       console.error('Failed to fetch lottery numbers', error);
-      return { success: false, message: 'Failed to fetch numbers.' };
+      return { success: false, message: 'ไม่สามารถดึงข้อมูลหมายเลขได้' };
     }
   })
   .get('/api/lottery/entries', async ({ headers, set }) => {
@@ -77,7 +77,7 @@ export const lotteryRoutes = new Elysia()
       return { success: true, entries: rows };
     } catch (error) {
       console.error('Failed to fetch lottery entries', error);
-      return { success: false, message: 'Failed to fetch entries.' };
+      return { success: false, message: 'ไม่สามารถดึงข้อมูลได้' };
     }
   })
   .post('/api/lottery/draw', async ({ body, headers, set }) => {
@@ -86,7 +86,7 @@ export const lotteryRoutes = new Elysia()
     const digitCount = PRIZE_DIGITS[body.prizeRank];
     if (!digitCount) {
       set.status = 400;
-      return { success: false, message: 'prizeRank must be 1, 2, or 3.' };
+      return { success: false, message: 'ลำดับรางวัลต้องเป็น 1, 2 หรือ 3 เท่านั้น' };
     }
     try {
       // Build the pool from actual submitted entries
@@ -98,7 +98,7 @@ export const lotteryRoutes = new Elysia()
       );
       if (entries.length === 0) {
         set.status = 400;
-        return { success: false, message: 'No entries to draw from.' };
+        return { success: false, message: 'ยังไม่มีผู้เข้าร่วมในการจับรางวัล' };
       }
 
       // For 2nd/3rd prize use distinct suffix pool so the draw is over unique
@@ -119,10 +119,10 @@ export const lotteryRoutes = new Elysia()
     } catch (error: unknown) {
       if (isUniqueViolation(error)) {
         set.status = 409;
-        return { success: false, message: `Prize ${body.prizeRank} has already been drawn.` };
+        return { success: false, message: `รางวัลที่ ${body.prizeRank} ถูกจับไปแล้ว` };
       }
       console.error('Failed to draw lottery prize', error);
-      return { success: false, message: 'Failed to draw prize.' };
+      return { success: false, message: 'ไม่สามารถจับรางวัลได้' };
     }
   }, {
     body: t.Object({ prizeRank: t.Number() }),
@@ -152,7 +152,7 @@ export const lotteryRoutes = new Elysia()
       return { success: true, results };
     } catch (error) {
       console.error('Failed to fetch lottery results', error);
-      return { success: false, message: 'Failed to fetch results.' };
+      return { success: false, message: 'ไม่สามารถดึงผลการจับรางวัลได้' };
     }
   })
   .delete('/api/lottery/draws', async ({ headers, set }) => {
@@ -168,7 +168,7 @@ export const lotteryRoutes = new Elysia()
       return { success: true };
     } catch (error) {
       console.error('Failed to reset lottery draws', error);
-      return { success: false, message: 'Failed to reset.' };
+      return { success: false, message: 'ไม่สามารถรีเซ็ตข้อมูลได้' };
     }
   })
   .delete('/api/lottery', async ({ headers, set }) => {
@@ -185,6 +185,6 @@ export const lotteryRoutes = new Elysia()
       return { success: true };
     } catch (error) {
       console.error('Failed to full reset lottery', error);
-      return { success: false, message: 'Failed to reset.' };
+      return { success: false, message: 'ไม่สามารถรีเซ็ตข้อมูลได้' };
     }
   });

@@ -17,14 +17,14 @@ async function fileToDownscaledBase64(file: File, maxSize = 900, quality = 0.82)
   const dataUrl = await new Promise<string>((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(new Error('Could not read file'))
+    reader.onerror = () => reject(new Error('ไม่สามารถอ่านไฟล์ได้'))
     reader.readAsDataURL(file)
   })
 
   const img = await new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image()
     image.onload = () => resolve(image)
-    image.onerror = () => reject(new Error('Could not decode image'))
+    image.onerror = () => reject(new Error('ไม่สามารถโหลดรูปภาพได้'))
     image.src = dataUrl
   })
 
@@ -46,7 +46,7 @@ async function onFileChange(event: Event) {
   const file = input.files?.[0]
   if (!file) return
   if (!file.type.startsWith('image/')) {
-    errorMessage.value = 'Please select an image file.'
+    errorMessage.value = 'กรุณาเลือกไฟล์รูปภาพ'
     return
   }
   try {
@@ -56,7 +56,7 @@ async function onFileChange(event: Event) {
     errorMessage.value = null
   } catch (err) {
     console.error(err)
-    errorMessage.value = 'Could not read that image. Try another one.'
+    errorMessage.value = 'ไม่สามารถอ่านรูปภาพได้ กรุณาลองรูปอื่น'
   }
 }
 
@@ -91,15 +91,15 @@ async function submit() {
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok || !data?.success) {
-      throw new Error(data?.message || 'Failed to submit. Please try again.')
+      throw new Error(data?.message || 'ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง')
     }
-    successMessage.value = 'Thank you! Your pick is on its way to the big screen.'
+    successMessage.value = `ขอบคุณ! ข้อมูลของ ${friendName.value.trim()} กำลังขึ้นจอใหญ่แล้ว 🎉`
     resetForm()
   } catch (err: unknown) {
     if (err && typeof err === 'object' && 'message' in err && typeof (err as { message: unknown }).message === 'string') {
       errorMessage.value = (err as { message: string }).message
     } else {
-      errorMessage.value = 'Something went wrong. Please try again.'
+      errorMessage.value = 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'
     }
   } finally {
     loading.value = false
@@ -110,67 +110,67 @@ async function submit() {
 <template>
   <main class="min-h-screen bg-off-white text-gray-800">
     <section class="mx-auto max-w-xl px-4 py-12 sm:py-16">
-      <h1 class="font-cookie text-5xl sm:text-6xl text-rose-600">Matchmaking Corner</h1>
+      <h1 class="font-cookie text-5xl sm:text-6xl text-rose-600">มุมจับคู่</h1>
       <p class="mt-3 text-gray-600">
-        Know a wonderful single friend? Tell us about them! We'll share the submissions on the big
-        screen at the reception so guests can meet.
+        รู้จักเพื่อนโสดดี ๆ ไหม? บอกเราเรื่องราวของพวกเขา!
+        เราจะแสดงรายชื่อบนจอใหญ่ที่งานแต่งงาน เผื่อใครสนใจทักทาย
       </p>
 
       <form class="mt-8 space-y-6" @submit.prevent="submit">
         <div>
-          <label for="submitterName" class="block text-sm font-medium text-gray-700">Your name</label>
+          <label for="submitterName" class="block text-sm font-medium text-gray-700">ชื่อของคุณ</label>
           <input
             id="submitterName"
             v-model="submitterName"
             required
             type="text"
-            placeholder="So your friend knows who sent them"
+            placeholder="เพื่อนจะได้รู้ว่าใครส่งมา"
             class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm placeholder:text-gray-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
           />
         </div>
 
         <div>
-          <label for="friendName" class="block text-sm font-medium text-gray-700">Your single friend's name</label>
+          <label for="friendName" class="block text-sm font-medium text-gray-700">ชื่อเพื่อนโสดของคุณ</label>
           <input
             id="friendName"
             v-model="friendName"
             required
             type="text"
-            placeholder="First name is fine"
+            placeholder="ชื่อเล่นก็ได้"
             class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm placeholder:text-gray-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
           />
         </div>
 
         <div>
-          <label for="contact" class="block text-sm font-medium text-gray-700">Contact</label>
+          <label for="contact" class="block text-sm font-medium text-gray-700">ช่องทางติดต่อ</label>
           <input
             id="contact"
             v-model="contact"
             required
             type="text"
-            placeholder="IG handle, LINE ID, or phone"
+            placeholder="IG, LINE ID หรือเบอร์โทร"
             class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm placeholder:text-gray-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
           />
         </div>
 
         <div>
-          <label for="bio" class="block text-sm font-medium text-gray-700">A short intro <span class="text-gray-400">(optional)</span></label>
+          <label for="bio" class="block text-sm font-medium text-gray-700">แนะนำตัวสั้น ๆ <span class="text-gray-400">(ไม่บังคับ)</span></label>
           <textarea
             id="bio"
             v-model="bio"
             rows="3"
             maxlength="500"
-            placeholder="Fun fact, what they're into, why they're a catch…"
+            placeholder="สิ่งที่น่าสนใจ งานอดิเรก หรือทำไมถึงน่าจีบ..."
             class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm placeholder:text-gray-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700">Photo <span class="text-gray-400">(optional)</span></label>
+          <label class="block text-sm font-medium text-gray-700">รูปภาพ <span class="text-gray-400">(ไม่บังคับ)</span></label>
           <div class="mt-2 flex items-center gap-4">
             <label class="inline-flex cursor-pointer items-center rounded-full bg-rose-50 px-4 py-2 text-sm text-rose-700 hover:bg-rose-100">
-              <span v-if="!photoPreview">Choose image</span>
-              <span v-else>Replace image</span>
+              <span v-if="!photoPreview">เลือกรูป</span>
+              <span v-else>เปลี่ยนรูป</span>
               <input type="file" accept="image/*" class="hidden" @change="onFileChange" />
             </label>
             <button
@@ -179,11 +179,11 @@ async function submit() {
               class="text-sm text-gray-500 hover:text-gray-700"
               @click="clearPhoto"
             >
-              Remove
+              ลบรูป
             </button>
           </div>
           <div v-if="photoPreview" class="mt-4">
-            <img :src="photoPreview" alt="Preview" class="max-h-64 rounded-lg object-cover shadow" />
+            <img :src="photoPreview" alt="ตัวอย่างรูป" class="max-h-64 rounded-lg object-cover shadow" />
           </div>
         </div>
 
@@ -192,8 +192,8 @@ async function submit() {
           :disabled="loading"
           class="inline-flex items-center rounded-full bg-rose-600 px-6 py-3 text-white shadow hover:bg-rose-700 disabled:opacity-50"
         >
-          <span v-if="!loading">Send to the big screen</span>
-          <span v-else>Sending…</span>
+          <span v-if="!loading">ส่งขึ้นจอใหญ่</span>
+          <span v-else>กำลังส่ง…</span>
         </button>
 
         <p v-if="successMessage" class="text-green-700">{{ successMessage }}</p>
@@ -201,8 +201,8 @@ async function submit() {
       </form>
 
       <p class="mt-10 text-sm text-gray-500">
-        By submitting, you confirm your friend is okay with being introduced at the wedding. Entries can
-        be taken down at any time by the moderators.
+        การส่งข้อมูล แสดงว่าคุณยืนยันว่าเพื่อนของคุณยินยอมให้แนะนำตัวในงานแต่งงาน
+        สามารถลบข้อมูลได้ตลอดเวลาโดยผู้ดูแล
       </p>
     </section>
   </main>

@@ -38,12 +38,12 @@ async function submit() {
       body: JSON.stringify({ name: name.value.trim(), number: number.value.trim() }),
     })
     const data = await res.json().catch(() => ({}))
-    if (!res.ok || !data?.success) throw new Error(data?.message || 'Failed to submit.')
-    success.value = `You're in the draw, ${name.value.trim()}! Good luck! 🍀`
+    if (!res.ok || !data?.success) throw new Error(data?.message || 'ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง')
+    success.value = `${name.value.trim()} เข้าร่วมลุ้นโชคแล้ว! ขอให้โชคดี! 🍀`
     name.value = ''
     number.value = ''
   } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : 'Something went wrong.'
+    error.value = err instanceof Error ? err.message : 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'
   } finally {
     loading.value = false
   }
@@ -53,35 +53,35 @@ async function submit() {
 <template>
   <main class="min-h-screen bg-off-white text-gray-800">
     <section class="mx-auto max-w-md px-4 py-12 sm:py-16">
-      <h1 class="font-cookie text-5xl sm:text-6xl text-rose-600">Lucky Draw</h1>
-      <p class="mt-3 text-gray-600">Pick your lucky 6-digit number and join the draw at the reception!</p>
+      <h1 class="font-cookie text-5xl sm:text-6xl text-rose-600">ลุ้นโชค</h1>
+      <p class="mt-3 text-gray-600">เลือกหมายเลข 6 หลักนำโชคของคุณ และร่วมลุ้นรับรางวัลในงาน!</p>
       <div class="mt-1 space-y-1">
-        <p class="text-sm text-rose-500 font-medium">Note: Numbers must not duplicate. Please check the used numbers below.</p>
-        <p class="text-sm text-rose-500 font-medium">Note: Each digit in your 6-digit number must be unique (no repeated digits).</p>
+        <p class="text-sm text-rose-500 font-medium">หมายเลขต้องไม่ซ้ำกับคนอื่น ตรวจสอบหมายเลขที่ถูกใช้แล้วด้านล่าง</p>
+        <p class="text-sm text-rose-500 font-medium">แต่ละหลักในหมายเลข 6 หลักต้องไม่ซ้ำกัน</p>
       </div>
 
       <div class="mt-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm text-sm text-gray-600 space-y-1">
-        <p><span class="font-semibold text-yellow-600">1st Prize</span> — exact 6-digit match</p>
-        <p><span class="font-semibold text-gray-500">2nd Prize</span> — last 3 digits match</p>
-        <p><span class="font-semibold text-amber-700">3rd Prize</span> — last 2 digits match</p>
-        <p class="pt-1 text-xs text-gray-400">Each number is unique — first come, first served.</p>
+        <p><span class="font-semibold text-yellow-600">รางวัลที่ 1</span> — ตรงทุก 6 หลัก</p>
+        <p><span class="font-semibold text-gray-500">รางวัลที่ 2</span> — 3 หลักท้ายตรง</p>
+        <p><span class="font-semibold text-amber-700">รางวัลที่ 3</span> — 2 หลักท้ายตรง</p>
+        <p class="pt-1 text-xs text-gray-400">แต่ละหมายเลขมีได้เพียงคนเดียว — มาก่อนได้ก่อน</p>
       </div>
 
       <form class="mt-8 space-y-5" @submit.prevent="submit">
         <div>
-          <label for="name" class="block text-sm font-medium text-gray-700">Your name</label>
+          <label for="name" class="block text-sm font-medium text-gray-700">ชื่อของคุณ</label>
           <input
             id="name"
             v-model="name"
             required
             type="text"
-            placeholder="As it should appear on screen"
+            placeholder="ชื่อที่จะแสดงบนจอ"
             class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm placeholder:text-gray-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700">Your lucky 6-digit number</label>
+          <label class="block text-sm font-medium text-gray-700">หมายเลขนำโชค 6 หลักของคุณ</label>
 
           <div class="mt-2 flex justify-between space-x-2 rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 font-mono text-3xl tracking-[0.5em] shadow-inner">
             <span v-for="i in 6" :key="i" :class="number[i-1] ? 'text-gray-800' : 'text-gray-300'">
@@ -107,7 +107,7 @@ async function submit() {
               :disabled="number.length === 0"
               class="col-span-2 flex h-12 items-center justify-center rounded-lg border border-rose-200 bg-rose-50 text-sm font-medium text-rose-600 shadow-sm transition-all hover:bg-rose-100 active:bg-rose-200 disabled:opacity-50"
             >
-              Delete
+              ลบ
             </button>
             <button
               type="button"
@@ -115,12 +115,12 @@ async function submit() {
               :disabled="number.length === 0"
               class="col-span-3 flex h-12 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 text-sm font-medium text-gray-600 shadow-sm transition-all hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50"
             >
-              Clear All
+              ล้างทั้งหมด
             </button>
           </div>
 
           <p v-if="hasDuplicateDigits && number.length > 0" class="mt-2 text-xs text-rose-600">
-            Digits must not be repeated.
+            แต่ละหลักต้องไม่ซ้ำกัน
           </p>
         </div>
 
@@ -129,7 +129,7 @@ async function submit() {
           :disabled="loading || number.length !== 6 || hasDuplicateDigits"
           class="inline-flex items-center rounded-full bg-rose-600 px-6 py-3 text-white shadow hover:bg-rose-700 disabled:opacity-50"
         >
-          {{ loading ? 'Submitting…' : 'Join the draw' }}
+          {{ loading ? 'กำลังส่ง…' : 'ร่วมลุ้นโชค' }}
         </button>
       </form>
 

@@ -43,8 +43,8 @@ onUnmounted(() => {
   <main class="min-h-screen bg-gradient-to-br from-rose-50 via-white to-rose-100 px-6 py-8">
     <header class="mb-8 text-center">
       <p class="text-sm uppercase tracking-[0.3em] text-rose-600">Kaywalee &amp; Supanat · Wedding Activity</p>
-      <h1 class="font-cookie mt-2 text-6xl sm:text-7xl text-rose-600">Matchmaking Corner</h1>
-      <p class="mt-2 text-gray-600">Meet our lovely single friends — say hi tonight!</p>
+      <h1 class="font-cookie mt-2 text-6xl sm:text-7xl text-rose-600">มุมจับคู่</h1>
+      <p class="mt-2 text-gray-600">มาทำความรู้จักเพื่อนโสดสุดน่ารักของเรากันเถอะ!</p>
     </header>
 
     <p v-if="error" class="mb-4 text-center text-rose-700">{{ error }}</p>
@@ -53,8 +53,8 @@ onUnmounted(() => {
       v-if="submissions.length === 0 && !error"
       class="flex min-h-[50vh] flex-col items-center justify-center text-center"
     >
-      <p class="font-cookie text-4xl text-rose-500">Submissions will appear here</p>
-      <p class="mt-2 text-gray-500">Scan the QR code to be the first to share a friend.</p>
+      <p class="font-cookie text-4xl text-rose-500">ข้อมูลจะปรากฏที่นี่</p>
+      <p class="mt-2 text-gray-500">สแกน QR Code เพื่อเป็นคนแรกที่แนะนำเพื่อน</p>
     </div>
 
     <section
@@ -84,7 +84,7 @@ onUnmounted(() => {
           <h2 class="font-cookie text-3xl leading-tight text-rose-600">{{ entry.friend_name }}</h2>
           <p v-if="entry.bio" class="text-sm text-gray-700">{{ entry.bio }}</p>
           <p class="mt-auto text-sm font-semibold text-rose-700 break-words">{{ entry.contact }}</p>
-          <p class="text-xs text-gray-500">Submitted by {{ entry.submitter_name }}</p>
+          <p class="text-xs text-gray-500">แนะนำโดย {{ entry.submitter_name }}</p>
         </div>
       </article>
     </section>

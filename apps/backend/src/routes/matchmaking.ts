@@ -10,7 +10,7 @@ export const matchmakingRoutes = new Elysia()
     if (authErr) return authErr;
     if (body.photoBase64 && body.photoBase64.length > 2_200_000) {
       set.status = 413;
-      return { success: false, message: 'Photo too large. Please pick a smaller image.' };
+      return { success: false, message: 'รูปภาพมีขนาดใหญ่เกินไป กรุณาเลือกรูปที่เล็กกว่า' };
     }
     try {
       const result = await Effect.runPromise(
@@ -30,7 +30,7 @@ export const matchmakingRoutes = new Elysia()
       return { success: true, submission: result };
     } catch (error) {
       console.error('Failed to save matchmaking submission', error);
-      return { success: false, message: 'Failed to save submission' };
+      return { success: false, message: 'ไม่สามารถบันทึกข้อมูลได้' };
     }
   }, {
     body: t.Object({
@@ -62,7 +62,7 @@ export const matchmakingRoutes = new Elysia()
       return { success: true, submissions: rows };
     } catch (error) {
       console.error('Failed to fetch matchmaking submissions', error);
-      return { success: false, message: 'Failed to fetch submissions' };
+      return { success: false, message: 'ไม่สามารถดึงข้อมูลได้' };
     }
   })
   .get('/api/matchmaking/all', async ({ headers, set }) => {
@@ -85,7 +85,7 @@ export const matchmakingRoutes = new Elysia()
       return { success: true, submissions: rows };
     } catch (error) {
       console.error('Failed to fetch all matchmaking submissions', error);
-      return { success: false, message: 'Failed to fetch submissions' };
+      return { success: false, message: 'ไม่สามารถดึงข้อมูลได้' };
     }
   })
   .patch('/api/matchmaking/:id', async ({ params, body, headers, set }) => {
@@ -94,7 +94,7 @@ export const matchmakingRoutes = new Elysia()
     const id = Number(params.id);
     if (!Number.isInteger(id) || id <= 0) {
       set.status = 400;
-      return { success: false, message: 'Invalid id' };
+      return { success: false, message: 'ID ไม่ถูกต้อง' };
     }
     try {
       const result = await Effect.runPromise(
@@ -111,12 +111,12 @@ export const matchmakingRoutes = new Elysia()
       );
       if (!result) {
         set.status = 404;
-        return { success: false, message: 'Not found' };
+        return { success: false, message: 'ไม่พบข้อมูล' };
       }
       return { success: true, submission: result };
     } catch (error) {
       console.error('Failed to update matchmaking submission', error);
-      return { success: false, message: 'Failed to update submission' };
+      return { success: false, message: 'ไม่สามารถอัปเดตข้อมูลได้' };
     }
   }, {
     body: t.Object({ approved: t.Boolean() }),
@@ -134,6 +134,6 @@ export const matchmakingRoutes = new Elysia()
       return { success: true };
     } catch (error) {
       console.error('Failed to delete all matchmaking submissions', error);
-      return { success: false, message: 'Failed to delete submissions.' };
+      return { success: false, message: 'ไม่สามารถลบข้อมูลได้' };
     }
   });

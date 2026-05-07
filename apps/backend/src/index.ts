@@ -7,6 +7,7 @@ import { LiveDatabase } from './db';
 import { rsvpRoutes } from './routes/rsvp';
 import { matchmakingRoutes } from './routes/matchmaking';
 import { lotteryRoutes } from './routes/lottery';
+import { huntRoutes } from './routes/hunt';
 
 const dbHealthCheck = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
@@ -34,6 +35,7 @@ const app = new Elysia()
   .use(rsvpRoutes)
   .use(matchmakingRoutes)
   .use(lotteryRoutes)
+  .use(huntRoutes)
   .listen(3000);
 
 Effect.runPromise(dbHealthCheck)
