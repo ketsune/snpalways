@@ -67,6 +67,21 @@ const router = createRouter({
       name: 'lottery-moderate',
       component: () => import('../views/LotteryModerateView.vue'),
     },
+    {
+      path: '/hunt',
+      name: 'hunt',
+      component: () => import('../views/HuntView.vue'),
+    },
+    {
+      path: '/hunt/board',
+      name: 'hunt-board',
+      component: () => import('../views/HuntBoardView.vue'),
+    },
+    {
+      path: '/hunt/moderate',
+      name: 'hunt-moderate',
+      component: () => import('../views/HuntModerateView.vue'),
+    },
     // todo add video presentation
     // todo pre wedding photo
     // todo seat plan

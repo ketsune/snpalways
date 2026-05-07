@@ -11,9 +11,9 @@ type DrawResult = {
 
 type Rank = 1 | 2 | 3
 const PRIZE_CONFIG: Record<Rank, { label: string; digits: number; accent: string }> = {
-  1: { label: '1st Prize', digits: 6, accent: '#f59e0b' },
-  2: { label: '2nd Prize', digits: 3, accent: '#e2e8f0' },
-  3: { label: '3rd Prize', digits: 2, accent: '#b45309' },
+  1: { label: 'รางวัลที่ 1', digits: 6, accent: '#f59e0b' },
+  2: { label: 'รางวัลที่ 2', digits: 3, accent: '#e2e8f0' },
+  3: { label: 'รางวัลที่ 3', digits: 2, accent: '#b45309' },
 }
 const cfg = (rank: number) => PRIZE_CONFIG[rank as Rank]
 
@@ -101,8 +101,8 @@ function getResult(rank: number): DrawResult | undefined {
 
 <template>
   <main class="min-h-screen bg-[#0b0c1a] text-white flex flex-col items-center justify-center px-4 py-12">
-    <h1 class="font-cookie text-5xl sm:text-7xl text-rose-400 mb-2 tracking-wide">Lucky Draw</h1>
-    <p class="text-gray-500 text-xs mb-10 tracking-widest uppercase">Som &amp; Pann Wedding</p>
+    <h1 class="font-cookie text-5xl sm:text-7xl text-rose-400 mb-2 tracking-wide">ลุ้นโชค</h1>
+    <p class="text-gray-500 text-xs mb-10 tracking-widest uppercase">งานแต่งงานส้ม &amp; ปัณณ์</p>
 
     <div class="w-full max-w-2xl space-y-6">
       <div
@@ -150,10 +150,10 @@ function getResult(rank: number): DrawResult | undefined {
               <span class="font-mono text-sm font-normal opacity-50">{{ w.number }}</span>
             </p>
           </div>
-          <p v-else class="text-gray-600 text-sm">No winner</p>
+          <p v-else class="text-gray-600 text-sm">ไม่มีผู้ถูกรางวัล</p>
         </template>
 
-        <div v-else class="text-gray-600 text-sm">Awaiting draw…</div>
+        <div v-else class="text-gray-600 text-sm">รอการจับรางวัล…</div>
       </div>
     </div>
   </main>

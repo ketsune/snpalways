@@ -12,9 +12,9 @@ type DrawResult = {
 
 type Rank = 1 | 2 | 3
 const PRIZE_CONFIG: Record<Rank, { label: string; digits: number }> = {
-  1: { label: '1st Prize', digits: 6 },
-  2: { label: '2nd Prize', digits: 3 },
-  3: { label: '3rd Prize', digits: 2 },
+  1: { label: 'รางวัลที่ 1', digits: 6 },
+  2: { label: 'รางวัลที่ 2', digits: 3 },
+  3: { label: 'รางวัลที่ 3', digits: 2 },
 }
 const cfg = (rank: number) => PRIZE_CONFIG[rank as Rank]
 
@@ -39,7 +39,7 @@ async function load() {
       apiFetch('/api/lottery/entries', { headers: { 'x-mod-token': token.value } }),
       apiFetch('/api/lottery/results'),
     ])
-    if (entryRes.status === 401) { error.value = 'Invalid moderator token.'; return }
+    if (entryRes.status === 401) { error.value = 'รหัสผู้ดูแลไม่ถูกต้อง'; return }
     const entryData = await entryRes.json().catch(() => ({}))
     const resultData = await resultRes.json().catch(() => ({}))
     if (!entryData.success) throw new Error(entryData.message || 'Failed to load entries')
@@ -131,30 +131,30 @@ const winnerNumbers = computed(() => {
         @click.self="fullResetModal = false"
       >
         <div class="mx-4 w-full max-w-md rounded-2xl bg-white p-7 shadow-xl">
-          <h2 class="text-xl font-bold text-gray-900">Reset everything?</h2>
+          <h2 class="text-xl font-bold text-gray-900">รีเซ็ตทุกอย่าง?</h2>
           <p class="mt-3 text-gray-600 text-sm leading-relaxed">
-            This will permanently delete <strong>all registered numbers</strong> and <strong>all drawn prizes</strong>.
-            Use this only for demo purposes. This cannot be undone.
+            การดำเนินการนี้จะลบ <strong>หมายเลขที่ลงทะเบียนทั้งหมด</strong> และ <strong>รางวัลที่จับแล้วทั้งหมด</strong>
+            ใช้เฉพาะเพื่อสาธิตเท่านั้น ไม่สามารถยกเลิกได้
           </p>
           <div class="mt-6 flex justify-end gap-3">
             <button
               class="rounded-full border border-gray-300 px-5 py-2 text-sm text-gray-700 hover:bg-gray-50"
               :disabled="fullResetBusy"
               @click="fullResetModal = false"
-            >Cancel</button>
+            >ยกเลิก</button>
             <button
               class="rounded-full bg-red-600 px-5 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-50"
               :disabled="fullResetBusy"
               @click="fullReset"
-            >{{ fullResetBusy ? 'Resetting…' : 'Yes, delete everything' }}</button>
+            >{{ fullResetBusy ? 'กำลังรีเซ็ต…' : 'ใช่ ลบทั้งหมด' }}</button>
           </div>
         </div>
       </div>
     </Teleport>
 
     <section class="mx-auto max-w-4xl">
-      <h1 class="font-cookie text-5xl text-rose-600">Lottery Control Panel</h1>
-      <p class="mt-2 text-gray-500 text-sm">Draw prizes and see results. Use <code>/lottery/board</code> on the projector.</p>
+      <h1 class="font-cookie text-5xl text-rose-600">แผงควบคุมลอตเตอรี่</h1>
+      <p class="mt-2 text-gray-500 text-sm">จับรางวัลและดูผล ใช้ <code>/lottery/board</code> บนโปรเจคเตอร์</p>
 
       <!-- Auth -->
       <form v-if="!authed" class="mt-6 flex gap-3" @submit.prevent="load">
@@ -162,14 +162,14 @@ const winnerNumbers = computed(() => {
           v-model="token"
           type="password"
           required
-          placeholder="Moderator token"
+          placeholder="รหัสผู้ดูแล"
           class="w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
         />
         <button
           type="submit"
           :disabled="loading"
           class="rounded-full bg-rose-600 px-6 py-2.5 text-white hover:bg-rose-700 disabled:opacity-50"
-        >{{ loading ? 'Loading…' : 'Enter' }}</button>
+        >{{ loading ? 'กำลังโหลด…' : 'เข้าสู่ระบบ' }}</button>
       </form>
       <p v-if="error" class="mt-4 text-rose-700">{{ error }}</p>
 
@@ -178,20 +178,20 @@ const winnerNumbers = computed(() => {
         <!-- Draw controls -->
         <div>
           <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-            <h2 class="text-lg font-semibold text-gray-800">Prize Draw</h2>
+            <h2 class="text-lg font-semibold text-gray-800">จับรางวัล</h2>
             <div class="flex flex-wrap gap-2 items-center">
-              <button class="text-sm text-gray-500 hover:underline" @click="load">Refresh</button>
+              <button class="text-sm text-gray-500 hover:underline" @click="load">รีเฟรช</button>
               <template v-if="!resetDrawsConfirm">
-                <button class="text-sm text-rose-500 hover:underline" @click="resetDrawsConfirm = true">Reset draws</button>
+                <button class="text-sm text-rose-500 hover:underline" @click="resetDrawsConfirm = true">รีเซ็ตการจับรางวัล</button>
               </template>
               <template v-else>
-                <button class="text-sm text-rose-700 font-semibold hover:underline" @click="resetDraws">Confirm</button>
-                <button class="text-sm text-gray-500 hover:underline" @click="resetDrawsConfirm = false">Cancel</button>
+                <button class="text-sm text-rose-700 font-semibold hover:underline" @click="resetDraws">ยืนยัน</button>
+                <button class="text-sm text-gray-500 hover:underline" @click="resetDrawsConfirm = false">ยกเลิก</button>
               </template>
               <button
                 class="rounded-full border border-red-300 px-4 py-1 text-sm text-red-600 hover:bg-red-50"
                 @click="fullResetModal = true"
-              >Reset all (demo)</button>
+              >รีเซ็ตทั้งหมด (เดโม)</button>
             </div>
           </div>
 
@@ -204,7 +204,7 @@ const winnerNumbers = computed(() => {
               class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm text-center"
             >
               <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">{{ cfg(rank).label }}</p>
-              <p class="text-xs text-gray-400 mb-3">{{ cfg(rank).digits }} digits</p>
+              <p class="text-xs text-gray-400 mb-3">{{ cfg(rank).digits }} หลัก</p>
 
               <template v-if="getResult(rank)">
                 <p class="font-mono text-3xl font-bold tracking-widest text-gray-900 mb-3">
@@ -215,7 +215,7 @@ const winnerNumbers = computed(() => {
                     🎉 {{ w.name }}
                   </p>
                 </div>
-                <p v-else class="text-gray-400 text-xs">No winner</p>
+                <p v-else class="text-gray-400 text-xs">ไม่มีผู้ถูกรางวัล</p>
               </template>
               <template v-else>
                 <p class="font-mono text-3xl font-bold tracking-widest text-gray-200 mb-3">
@@ -226,7 +226,7 @@ const winnerNumbers = computed(() => {
                   class="rounded-full bg-rose-600 px-4 py-2 text-sm text-white hover:bg-rose-700 disabled:opacity-50"
                   @click="draw(rank)"
                 >
-                  {{ drawing === rank ? 'Drawing…' : `Draw ${cfg(rank).label}` }}
+                  {{ drawing === rank ? 'กำลังจับ…' : `จับ${cfg(rank).label}` }}
                 </button>
               </template>
             </div>
@@ -236,8 +236,8 @@ const winnerNumbers = computed(() => {
         <!-- Entry list -->
         <div>
           <h2 class="text-base font-semibold text-gray-700 mb-3">
-            Registered numbers
-            <span class="ml-2 text-xs font-normal text-gray-400">({{ entries.length }} total)</span>
+            หมายเลขที่ลงทะเบียน
+            <span class="ml-2 text-xs font-normal text-gray-400">({{ entries.length }} รายการ)</span>
           </h2>
           <div class="flex flex-wrap gap-2">
             <div
@@ -251,7 +251,7 @@ const winnerNumbers = computed(() => {
               <span class="font-mono font-bold">{{ entry.number }}</span>
               <span class="ml-2 text-gray-500">{{ entry.name }}</span>
             </div>
-            <p v-if="entries.length === 0" class="text-gray-400 text-sm">No entries yet.</p>
+            <p v-if="entries.length === 0" class="text-gray-400 text-sm">ยังไม่มีผู้เข้าร่วม</p>
           </div>
         </div>
 
