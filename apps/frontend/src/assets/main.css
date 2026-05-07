@@ -15,7 +15,7 @@
 
   --font-corinthia: "Corinthia", cursive;
   --font-fluer-de-leah: "Fleur De Leah", cursive;
-  --font-cookie: "Cookie", cursive;
+  --font-cookie: "Cookie", "Sarabun", cursive;
 }
 
 @layer components {
