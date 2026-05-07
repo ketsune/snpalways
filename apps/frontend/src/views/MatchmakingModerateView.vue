@@ -94,7 +94,7 @@ async function setApproved(id: number, approved: boolean) {
         <div class="mx-4 w-full max-w-md rounded-2xl bg-white p-7 shadow-xl">
           <h2 class="text-xl font-bold text-gray-900">ลบข้อมูลทั้งหมด?</h2>
           <p class="mt-3 text-gray-600 text-sm leading-relaxed">
-            การดำเนินการนี้จะลบ <strong>ข้อมูลมุมจับคู่ทั้งหมด</strong> อย่างถาวร
+            การดำเนินการนี้จะลบ <strong>ข้อมูลมุมคนโสดโดยความสามารถทั้งหมด</strong> อย่างถาวร
             ใช้เฉพาะเพื่อสาธิตเท่านั้น ไม่สามารถยกเลิกได้
           </p>
           <div class="mt-6 flex justify-end gap-3">
@@ -114,7 +114,7 @@ async function setApproved(id: number, approved: boolean) {
     </Teleport>
 
     <section class="mx-auto max-w-4xl">
-      <h1 class="font-cookie text-5xl text-rose-600">จัดการมุมจับคู่</h1>
+      <h1 class="font-cookie text-5xl text-rose-600">จัดการมุมคนโสดโดยความสามารถ</h1>
       <p class="mt-2 text-gray-600">นำข้อมูลออกก่อนแสดงบนจอใหญ่</p>
 
       <form v-if="!authed" class="mt-6 flex gap-3" @submit.prevent="load">

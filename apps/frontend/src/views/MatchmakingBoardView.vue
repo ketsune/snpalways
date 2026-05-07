@@ -43,7 +43,7 @@ onUnmounted(() => {
   <main class="min-h-screen bg-gradient-to-br from-rose-50 via-white to-rose-100 px-6 py-8">
     <header class="mb-8 text-center">
       <p class="text-sm uppercase tracking-[0.3em] text-rose-600">Kaywalee &amp; Supanat · Wedding Activity</p>
-      <h1 class="font-cookie mt-2 text-6xl sm:text-7xl text-rose-600">มุมจับคู่</h1>
+      <h1 class="font-cookie mt-2 text-6xl sm:text-7xl text-rose-600">มุมคนโสดโดยความสามารถ</h1>
       <p class="mt-2 text-gray-600">มาทำความรู้จักเพื่อนโสดสุดน่ารักของเรากันเถอะ!</p>
     </header>
 
