@@ -212,11 +212,11 @@ watch(
           <nav class="flex flex-col py-2">
             <RouterLink
               v-for="item in [
-                { to: '/home', label: 'Home', icon: 'home' },
-                { to: '/home#venue', label: 'Location', icon: 'location' },
-                { to: '/matchmaking', label: 'Matchmaking', icon: 'heart' },
-                { to: '/gallery', label: 'Gallery', icon: 'photo' },
-                { to: '/table', label: 'Table', icon: 'table' },
+                { to: '/home', label: 'หน้าแรก', icon: 'home' },
+                { to: '/home#venue', label: 'สถานที่', icon: 'location' },
+                { to: '/matchmaking', label: 'ขายคนโสด', icon: 'heart' },
+                { to: '/gallery', label: 'อัลบั๊ม', icon: 'photo' },
+                { to: '/table', label: 'หาโต๊ะ', icon: 'table' },
                 { to: '/lottery', label: 'Lucky Draw', icon: 'gift' },
               ]"
               :key="item.to"
