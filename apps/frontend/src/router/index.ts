@@ -82,9 +82,18 @@ const router = createRouter({
       name: 'hunt-moderate',
       component: () => import('../views/HuntModerateView.vue'),
     },
+    {
+      path: '/table',
+      name: 'table',
+      component: () => import('../views/TableView.vue'),
+    },
+    {
+      path: '/table/moderate',
+      name: 'table-moderate',
+      component: () => import('../views/TableModerateView.vue'),
+    },
     // todo add video presentation
     // todo pre wedding photo
-    // todo seat plan
   ],
 })
 

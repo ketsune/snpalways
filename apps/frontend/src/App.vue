@@ -25,6 +25,9 @@ const showHeader = computed(() => route.name !== 'landing')
           <RouterLink class="text-gray-600 hover:text-gray-900" to="/gallery">
             Gallery
           </RouterLink>
+          <RouterLink class="text-gray-600 hover:text-gray-900" to="/table">
+            โต๊ะ
+          </RouterLink>
           <RouterLink class="text-gray-600 hover:text-gray-900" to="/lottery">
             Lucky Draw
           </RouterLink>

@@ -77,3 +77,13 @@ export const huntPhotos = pgTable('hunt_photos', {
 
 export type InsertHuntPhoto = typeof huntPhotos.$inferInsert;
 export type SelectHuntPhoto = typeof huntPhotos.$inferSelect;
+
+export const seats = pgTable('seats', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  tableName: text('table_name').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type InsertSeat = typeof seats.$inferInsert;
+export type SelectSeat = typeof seats.$inferSelect;
