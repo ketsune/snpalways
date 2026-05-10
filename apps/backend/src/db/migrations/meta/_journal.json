@@ -29,6 +29,13 @@
       "when": 1777795200000,
       "tag": "0003_hunt",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1778400000000,
+      "tag": "0004_seats",
+      "breakpoints": true
     }
   ]
 }
