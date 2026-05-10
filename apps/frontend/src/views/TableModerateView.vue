@@ -370,7 +370,7 @@ const filtered = () =>
             </template>
             <template v-else>
               <p class="flex-1 text-sm text-gray-800">{{ seat.name }}</p>
-              <p class="font-cookie text-2xl text-rose-600 w-16 text-right">{{ seat.table_name }}</p>
+              <p class="text-xl font-bold text-rose-600 w-16 text-right" style="font-family: 'Sarabun', sans-serif">{{ seat.table_name }}</p>
               <button class="text-xs text-gray-400 hover:text-gray-700" @click="startEdit(seat)">แก้ไข</button>
               <button class="text-xs text-red-400 hover:text-red-600" @click="deleteSeat(seat.id)">ลบ</button>
             </template>
