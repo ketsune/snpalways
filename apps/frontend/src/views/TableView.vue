@@ -39,7 +39,7 @@ async function search() {
 
 <template>
   <main class="min-h-screen bg-off-white text-gray-800">
-    <section class="mx-auto max-w-md px-4 py-12 sm:py-16">
+    <section class="mx-auto max-w-2xl px-4 py-12 sm:py-16">
       <h1 class="font-cookie text-5xl sm:text-6xl text-rose-600">ค้นหาโต๊ะของคุณ</h1>
       <p class="mt-3 text-gray-600">พิมพ์ชื่อเพื่อดูหมายเลขโต๊ะของคุณ</p>
 
@@ -49,7 +49,7 @@ async function search() {
           @input="onInput"
           @keydown.enter.prevent="search"
           type="text"
-          placeholder="ชื่อ-นามสกุล"
+          placeholder="ชื่อ"
           class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm placeholder:text-gray-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
         />
       </div>
@@ -64,10 +64,10 @@ async function search() {
           :key="seat.id"
           class="flex items-center justify-between rounded-2xl border border-rose-100 bg-white px-5 py-4 shadow-sm"
         >
-          <p class="text-gray-800 font-medium">{{ seat.name }}</p>
+          <p class="text-gray-800 font-medium" style="font-family: 'Sarabun', sans-serif">{{ seat.name }}</p>
           <div class="text-right">
             <p class="text-xs text-gray-400 uppercase tracking-widest">โต๊ะ</p>
-            <p class="font-cookie text-3xl text-rose-600 leading-none">{{ seat.table_name }}</p>
+            <p class="text-2xl font-bold text-rose-600 leading-none" style="font-family: 'Sarabun', sans-serif">{{ seat.table_name }}</p>
           </div>
         </div>
       </div>

@@ -28,6 +28,65 @@ const deleteAllBusy = ref(false)
 // Filter
 const filterQ = ref('')
 
+// CSV import
+const csvPreview = ref<{ name: string; table_name: string }[]>([])
+const csvError = ref<string | null>(null)
+const importBusy = ref(false)
+const importSuccess = ref<string | null>(null)
+
+function parseCSV(text: string): { name: string; table_name: string }[] {
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean)
+  const rows: { name: string; table_name: string }[] = []
+  for (const line of lines) {
+    // skip header row if it looks like "name,table" literally
+    if (/^name[,;]/i.test(line)) continue
+    const sep = line.includes(';') ? ';' : ','
+    const parts = line.split(sep).map(p => p.trim().replace(/^"|"$/g, ''))
+    if (parts.length < 2 || !parts[0] || !parts[1]) continue
+    rows.push({ name: parts[0], table_name: parts[1] })
+  }
+  return rows
+}
+
+function onFileChange(e: Event) {
+  csvError.value = null
+  csvPreview.value = []
+  importSuccess.value = null
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => {
+    const text = ev.target?.result as string
+    const rows = parseCSV(text)
+    if (!rows.length) { csvError.value = 'ไม่พบข้อมูลในไฟล์ — ตรวจสอบรูปแบบ name,table_name'; return }
+    csvPreview.value = rows
+  }
+  reader.readAsText(file, 'UTF-8')
+}
+
+async function importCSV() {
+  if (!csvPreview.value.length) return
+  importBusy.value = true
+  csvError.value = null
+  importSuccess.value = null
+  try {
+    const res = await apiFetch('/api/seats/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-mod-token': token.value },
+      body: JSON.stringify({ rows: csvPreview.value }),
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok || !data.success) throw new Error(data.message || 'นำเข้าไม่สำเร็จ')
+    seats.value = data.seats
+    csvPreview.value = []
+    importSuccess.value = `นำเข้าสำเร็จ ${data.count} รายการ`
+  } catch (err: unknown) {
+    csvError.value = err instanceof Error ? err.message : 'นำเข้าไม่สำเร็จ'
+  } finally {
+    importBusy.value = false
+  }
+}
+
 async function load() {
   loading.value = true
   error.value = null
@@ -220,6 +279,46 @@ const filtered = () =>
               class="rounded-full bg-rose-600 px-5 py-2 text-sm text-white hover:bg-rose-700 disabled:opacity-50"
             >{{ addBusy ? 'กำลังบันทึก…' : 'เพิ่ม' }}</button>
           </form>
+        </div>
+
+        <!-- CSV Import -->
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+          <h2 class="text-sm font-semibold text-gray-700 mb-1">นำเข้า CSV (เขียนทับทั้งหมด)</h2>
+          <p class="text-xs text-gray-400 mb-3">รูปแบบ: <code class="bg-gray-100 px-1 rounded">name,table_name</code> — หนึ่งแถวต่อหนึ่งแขก</p>
+          <input
+            type="file"
+            accept=".csv,text/csv"
+            class="text-sm text-gray-600 file:mr-3 file:rounded-full file:border-0 file:bg-rose-50 file:px-4 file:py-1.5 file:text-sm file:text-rose-700 hover:file:bg-rose-100"
+            @change="onFileChange"
+          />
+          <p v-if="csvError" class="mt-2 text-xs text-rose-600">{{ csvError }}</p>
+          <p v-if="importSuccess" class="mt-2 text-xs text-green-600">{{ importSuccess }}</p>
+
+          <!-- Preview -->
+          <div v-if="csvPreview.length" class="mt-4">
+            <p class="text-xs text-gray-500 mb-2">พรีวิว {{ csvPreview.length }} รายการ (จะลบข้อมูลเดิมทั้งหมด)</p>
+            <div class="max-h-48 overflow-y-auto rounded-lg border border-gray-100 text-xs">
+              <table class="w-full">
+                <thead class="bg-gray-50 sticky top-0">
+                  <tr>
+                    <th class="px-3 py-2 text-left text-gray-500 font-medium">ชื่อ</th>
+                    <th class="px-3 py-2 text-left text-gray-500 font-medium">โต๊ะ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, i) in csvPreview" :key="i" class="border-t border-gray-100">
+                    <td class="px-3 py-1.5 text-gray-700">{{ row.name }}</td>
+                    <td class="px-3 py-1.5 text-gray-700">{{ row.table_name }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <button
+              class="mt-3 rounded-full bg-rose-600 px-5 py-2 text-sm text-white hover:bg-rose-700 disabled:opacity-50"
+              :disabled="importBusy"
+              @click="importCSV"
+            >{{ importBusy ? 'กำลังนำเข้า…' : `นำเข้า ${csvPreview.length} รายการ` }}</button>
+          </div>
         </div>
 
         <!-- Header row -->
