@@ -12,7 +12,7 @@ import photo6 from '@/assets/home-photo-2.JPG'
 import photo7 from '@/assets/home-photo-3.JPG'
 
 // Gallery photos with groupId pattern: gallery-{groupId}-{id}.jpg
-// Group 1
+// Group 1 (new)
 import g1_1 from '@/assets/gallery/gallery-1-1.jpg'
 import g1_2 from '@/assets/gallery/gallery-1-2.jpg'
 import g1_3 from '@/assets/gallery/gallery-1-3.jpg'
@@ -23,21 +23,42 @@ import g1_7 from '@/assets/gallery/gallery-1-7.jpg'
 import g1_8 from '@/assets/gallery/gallery-1-8.jpg'
 import g1_9 from '@/assets/gallery/gallery-1-9.jpg'
 import g1_10 from '@/assets/gallery/gallery-1-10.jpg'
+import g1_11 from '@/assets/gallery/gallery-1-11.jpg'
 import g1_12 from '@/assets/gallery/gallery-1-12.jpg'
 import g1_13 from '@/assets/gallery/gallery-1-13.jpg'
 import g1_14 from '@/assets/gallery/gallery-1-14.jpg'
+import g1_15 from '@/assets/gallery/gallery-1-15.jpg'
+import g1_16 from '@/assets/gallery/gallery-1-16.jpg'
+import g1_17 from '@/assets/gallery/gallery-1-17.jpg'
+import g1_18 from '@/assets/gallery/gallery-1-18.jpg'
+import g1_19 from '@/assets/gallery/gallery-1-19.jpg'
+import g1_20 from '@/assets/gallery/gallery-1-20.jpg'
+import g1_21 from '@/assets/gallery/gallery-1-21.jpg'
+import g1_22 from '@/assets/gallery/gallery-1-22.jpg'
+import g1_23 from '@/assets/gallery/gallery-1-23.jpg'
+import g1_24 from '@/assets/gallery/gallery-1-24.jpg'
+import g1_25 from '@/assets/gallery/gallery-1-25.jpg'
+import g1_26 from '@/assets/gallery/gallery-1-26.jpg'
+import g1_27 from '@/assets/gallery/gallery-1-27.jpg'
 // Group 2
 import g2_1 from '@/assets/gallery/gallery-2-1.jpg'
+import g2_2 from '@/assets/gallery/gallery-2-2.jpg'
+import g2_3 from '@/assets/gallery/gallery-2-3.jpg'
+import g2_4 from '@/assets/gallery/gallery-2-4.jpg'
+import g2_5 from '@/assets/gallery/gallery-2-5.jpg'
+import g2_6 from '@/assets/gallery/gallery-2-6.jpg'
+import g2_7 from '@/assets/gallery/gallery-2-7.jpg'
+import g2_8 from '@/assets/gallery/gallery-2-8.jpg'
+import g2_9 from '@/assets/gallery/gallery-2-9.jpg'
+import g2_10 from '@/assets/gallery/gallery-2-10.jpg'
+import g2_12 from '@/assets/gallery/gallery-2-12.jpg'
+import g2_13 from '@/assets/gallery/gallery-2-13.jpg'
+import g2_14 from '@/assets/gallery/gallery-2-14.jpg'
 // Group 3
 import g3_1 from '@/assets/gallery/gallery-3-1.jpg'
-import g3_2 from '@/assets/gallery/gallery-3-2.jpg'
 // Group 4
 import g4_1 from '@/assets/gallery/gallery-4-1.jpg'
 import g4_2 from '@/assets/gallery/gallery-4-2.jpg'
-import g4_3 from '@/assets/gallery/gallery-4-3.jpg'
-import g4_4 from '@/assets/gallery/gallery-4-4.jpg'
-import g4_5 from '@/assets/gallery/gallery-4-5.jpg'
-import g4_6 from '@/assets/gallery/gallery-4-6.jpg'
 // Group 5
 import g5_1 from '@/assets/gallery/gallery-5-1.jpg'
 import g5_2 from '@/assets/gallery/gallery-5-2.jpg'
@@ -52,13 +73,20 @@ import g6_3 from '@/assets/gallery/gallery-6-3.jpg'
 import g6_4 from '@/assets/gallery/gallery-6-4.jpg'
 import g6_5 from '@/assets/gallery/gallery-6-5.jpg'
 import g6_6 from '@/assets/gallery/gallery-6-6.jpg'
-import g6_8 from '@/assets/gallery/gallery-6-8.jpg'
-import g6_9 from '@/assets/gallery/gallery-6-9.jpg'
-import g6_10 from '@/assets/gallery/gallery-6-10.jpg'
-import g6_11 from '@/assets/gallery/gallery-6-11.jpg'
-import g6_12 from '@/assets/gallery/gallery-6-12.jpg'
-import g6_13 from '@/assets/gallery/gallery-6-13.jpg'
-import g6_14 from '@/assets/gallery/gallery-6-14.jpg'
+// Group 7
+import g7_1 from '@/assets/gallery/gallery-7-1.jpg'
+import g7_2 from '@/assets/gallery/gallery-7-2.jpg'
+import g7_3 from '@/assets/gallery/gallery-7-3.jpg'
+import g7_4 from '@/assets/gallery/gallery-7-4.jpg'
+import g7_5 from '@/assets/gallery/gallery-7-5.jpg'
+import g7_6 from '@/assets/gallery/gallery-7-6.jpg'
+import g7_8 from '@/assets/gallery/gallery-7-8.jpg'
+import g7_9 from '@/assets/gallery/gallery-7-9.jpg'
+import g7_10 from '@/assets/gallery/gallery-7-10.jpg'
+import g7_11 from '@/assets/gallery/gallery-7-11.jpg'
+import g7_12 from '@/assets/gallery/gallery-7-12.jpg'
+import g7_13 from '@/assets/gallery/gallery-7-13.jpg'
+import g7_14 from '@/assets/gallery/gallery-7-14.jpg'
 
 // Define images with groupId for grouping and sorting
 const rawGalleryImages = [
@@ -70,7 +98,7 @@ const rawGalleryImages = [
   { src: photo5, alt: 'Home Photo 1', groupId: 0 },
   { src: photo6, alt: 'Home Photo 2', groupId: 0 },
   { src: photo7, alt: 'Home Photo 3', groupId: 0 },
-  // Group 1
+  // Group 1 (new)
   { src: g1_1, alt: 'Gallery Photo 1-1', groupId: 1 },
   { src: g1_2, alt: 'Gallery Photo 1-2', groupId: 1 },
   { src: g1_3, alt: 'Gallery Photo 1-3', groupId: 1 },
@@ -81,21 +109,42 @@ const rawGalleryImages = [
   { src: g1_8, alt: 'Gallery Photo 1-8', groupId: 1 },
   { src: g1_9, alt: 'Gallery Photo 1-9', groupId: 1 },
   { src: g1_10, alt: 'Gallery Photo 1-10', groupId: 1 },
+  { src: g1_11, alt: 'Gallery Photo 1-11', groupId: 1 },
   { src: g1_12, alt: 'Gallery Photo 1-12', groupId: 1 },
   { src: g1_13, alt: 'Gallery Photo 1-13', groupId: 1 },
   { src: g1_14, alt: 'Gallery Photo 1-14', groupId: 1 },
+  { src: g1_15, alt: 'Gallery Photo 1-15', groupId: 1 },
+  { src: g1_16, alt: 'Gallery Photo 1-16', groupId: 1 },
+  { src: g1_17, alt: 'Gallery Photo 1-17', groupId: 1 },
+  { src: g1_18, alt: 'Gallery Photo 1-18', groupId: 1 },
+  { src: g1_19, alt: 'Gallery Photo 1-19', groupId: 1 },
+  { src: g1_20, alt: 'Gallery Photo 1-20', groupId: 1 },
+  { src: g1_21, alt: 'Gallery Photo 1-21', groupId: 1 },
+  { src: g1_22, alt: 'Gallery Photo 1-22', groupId: 1 },
+  { src: g1_23, alt: 'Gallery Photo 1-23', groupId: 1 },
+  { src: g1_24, alt: 'Gallery Photo 1-24', groupId: 1 },
+  { src: g1_25, alt: 'Gallery Photo 1-25', groupId: 1 },
+  { src: g1_26, alt: 'Gallery Photo 1-26', groupId: 1 },
+  { src: g1_27, alt: 'Gallery Photo 1-27', groupId: 1 },
   // Group 2
   { src: g2_1, alt: 'Gallery Photo 2-1', groupId: 2 },
+  { src: g2_2, alt: 'Gallery Photo 2-2', groupId: 2 },
+  { src: g2_3, alt: 'Gallery Photo 2-3', groupId: 2 },
+  { src: g2_4, alt: 'Gallery Photo 2-4', groupId: 2 },
+  { src: g2_5, alt: 'Gallery Photo 2-5', groupId: 2 },
+  { src: g2_6, alt: 'Gallery Photo 2-6', groupId: 2 },
+  { src: g2_7, alt: 'Gallery Photo 2-7', groupId: 2 },
+  { src: g2_8, alt: 'Gallery Photo 2-8', groupId: 2 },
+  { src: g2_9, alt: 'Gallery Photo 2-9', groupId: 2 },
+  { src: g2_10, alt: 'Gallery Photo 2-10', groupId: 2 },
+  { src: g2_12, alt: 'Gallery Photo 2-12', groupId: 2 },
+  { src: g2_13, alt: 'Gallery Photo 2-13', groupId: 2 },
+  { src: g2_14, alt: 'Gallery Photo 2-14', groupId: 2 },
   // Group 3
   { src: g3_1, alt: 'Gallery Photo 3-1', groupId: 3 },
-  { src: g3_2, alt: 'Gallery Photo 3-2', groupId: 3 },
   // Group 4
   { src: g4_1, alt: 'Gallery Photo 4-1', groupId: 4 },
   { src: g4_2, alt: 'Gallery Photo 4-2', groupId: 4 },
-  { src: g4_3, alt: 'Gallery Photo 4-3', groupId: 4 },
-  { src: g4_4, alt: 'Gallery Photo 4-4', groupId: 4 },
-  { src: g4_5, alt: 'Gallery Photo 4-5', groupId: 4 },
-  { src: g4_6, alt: 'Gallery Photo 4-6', groupId: 4 },
   // Group 5
   { src: g5_1, alt: 'Gallery Photo 5-1', groupId: 5 },
   { src: g5_2, alt: 'Gallery Photo 5-2', groupId: 5 },
@@ -110,13 +159,20 @@ const rawGalleryImages = [
   { src: g6_4, alt: 'Gallery Photo 6-4', groupId: 6 },
   { src: g6_5, alt: 'Gallery Photo 6-5', groupId: 6 },
   { src: g6_6, alt: 'Gallery Photo 6-6', groupId: 6 },
-  { src: g6_8, alt: 'Gallery Photo 6-8', groupId: 6 },
-  { src: g6_9, alt: 'Gallery Photo 6-9', groupId: 6 },
-  { src: g6_10, alt: 'Gallery Photo 6-10', groupId: 6 },
-  { src: g6_11, alt: 'Gallery Photo 6-11', groupId: 6 },
-  { src: g6_12, alt: 'Gallery Photo 6-12', groupId: 6 },
-  { src: g6_13, alt: 'Gallery Photo 6-13', groupId: 6 },
-  { src: g6_14, alt: 'Gallery Photo 6-14', groupId: 6 },
+  // Group 7
+  { src: g7_1, alt: 'Gallery Photo 7-1', groupId: 7 },
+  { src: g7_2, alt: 'Gallery Photo 7-2', groupId: 7 },
+  { src: g7_3, alt: 'Gallery Photo 7-3', groupId: 7 },
+  { src: g7_4, alt: 'Gallery Photo 7-4', groupId: 7 },
+  { src: g7_5, alt: 'Gallery Photo 7-5', groupId: 7 },
+  { src: g7_6, alt: 'Gallery Photo 7-6', groupId: 7 },
+  { src: g7_8, alt: 'Gallery Photo 7-8', groupId: 7 },
+  { src: g7_9, alt: 'Gallery Photo 7-9', groupId: 7 },
+  { src: g7_10, alt: 'Gallery Photo 7-10', groupId: 7 },
+  { src: g7_11, alt: 'Gallery Photo 7-11', groupId: 7 },
+  { src: g7_12, alt: 'Gallery Photo 7-12', groupId: 7 },
+  { src: g7_13, alt: 'Gallery Photo 7-13', groupId: 7 },
+  { src: g7_14, alt: 'Gallery Photo 7-14', groupId: 7 },
 ]
 
 // Fisher-Yates shuffle algorithm
