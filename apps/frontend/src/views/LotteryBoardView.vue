@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { apiFetch } from '@/lib/api'
 import drawSoundUrl from '@/assets/sound-effect/lottery-drawing-effect.mp3'
 
@@ -12,6 +12,15 @@ type DrawResult = {
   winners: { name: string; number: string }[]
 }
 
+type Bubble = {
+  id: number
+  name: string
+  number: string
+  x: number  // vw %
+  y: number  // vh %
+  visible: boolean
+}
+
 type Rank = 1 | 2 | 3
 const PRIZE_CONFIG: Record<Rank, { label: string; sublabel: string; digits: number; accent: string }> = {
   1: { label: 'รางวัลที่ 1', sublabel: '6 หลัก', digits: 6, accent: '#f59e0b' },
@@ -22,40 +31,61 @@ const cfg = (rank: number) => PRIZE_CONFIG[rank as Rank]
 
 const results = ref<DrawResult[]>([])
 const totalEntries = ref<number | null>(null)
-// Characters currently shown per rank (string of digits/?)
+
+// Bubble system
+const bubbles = ref<Bubble[]>([])
+const seenNumbers = ref(new Set<string>())
+const initialLoad = ref(true)
+let bubbleIdSeq = 0
+
+function spawnBubble(name: string, number: string) {
+  const id = ++bubbleIdSeq
+  // Keep away from center column (prize cards): left 5–30% or right 65–90%
+  const side = Math.random() < 0.5
+  const x = side ? 5 + Math.random() * 25 : 65 + Math.random() * 25
+  const y = 10 + Math.random() * 75
+
+  bubbles.value.push({ id, name, number, x, y, visible: false })
+
+  // Tick to let Vue render the element, then fade in
+  nextTick(() => {
+    const b = bubbles.value.find(b => b.id === id)
+    if (b) b.visible = true
+  })
+
+  // Fade out after 3.5s, remove after transition (0.6s)
+  setTimeout(() => {
+    const b = bubbles.value.find(b => b.id === id)
+    if (b) b.visible = false
+  }, 3500)
+
+  setTimeout(() => {
+    bubbles.value = bubbles.value.filter(b => b.id !== id)
+  }, 4200)
+}
+
+// Digit reveal state
 const displayNumbers = ref<Record<number, string>>({})
-// How many digits are fully revealed (locked in) per rank
 const revealedCount = ref<Record<number, number>>({ 1: 0, 2: 0, 3: 0 })
-// Board state per rank
 const states = ref<Record<number, 'pending' | 'spinning' | 'revealed'>>({
   1: 'pending', 2: 'pending', 3: 'pending',
 })
-// Last known revealed_digits from API per rank (to detect increases)
 const apiRevealedDigits = ref<Record<number, number>>({ 1: 0, 2: 0, 3: 0 })
-// Ranks we've seen at all from the API
 const seenRanks = ref(new Set<number>())
-// Queue of digit positions waiting to animate (per rank)
 const animQueue = ref<Record<number, number[]>>({ 1: [], 2: [], 3: [] })
 const animating = ref<Record<number, boolean>>({ 1: false, 2: false, 3: false })
-const initialLoad = ref(true)
 
 function playDrawSound() {
   try {
     const audio = new Audio(drawSoundUrl)
     audio.play().catch(() => {})
-  } catch {
-    // silent
-  }
+  } catch { /* silent */ }
 }
 
-// Spin a single digit slot at `pos` then lock in `finalChar`
 function spinSingleDigit(rank: number, pos: number, finalChar: string, onDone: () => void) {
   const digitCount = cfg(rank).digits
   const currentChars = (displayNumbers.value[rank] ?? '?'.repeat(digitCount)).split('')
-
   playDrawSound()
-
-  // Fast ticks slowing to a stop — 20 ticks total
   const TOTAL_TICKS = 20
   let ticks = 0
   const tick = () => {
@@ -63,11 +93,8 @@ function spinSingleDigit(rank: number, pos: number, finalChar: string, onDone: (
     displayNumbers.value[rank] = currentChars.join('')
     ticks++
     if (ticks < TOTAL_TICKS) {
-      // Delay grows from 40ms → 180ms (ease-out feel)
-      const delay = 40 + Math.floor((ticks / TOTAL_TICKS) * 140)
-      setTimeout(tick, delay)
+      setTimeout(tick, 40 + Math.floor((ticks / TOTAL_TICKS) * 140))
     } else {
-      // Lock in final digit
       currentChars[pos] = finalChar
       displayNumbers.value[rank] = currentChars.join('')
       revealedCount.value[rank] = pos + 1
@@ -77,13 +104,11 @@ function spinSingleDigit(rank: number, pos: number, finalChar: string, onDone: (
   tick()
 }
 
-// Drain the queue for a rank, one digit at a time
 function drainQueue(rank: number, winningNumber: string) {
   if (animating.value[rank]) return
   const queue = animQueue.value[rank] ?? []
   if (queue.length === 0) {
     animating.value[rank] = false
-    // Check if fully revealed
     if ((revealedCount.value[rank] ?? 0) >= cfg(rank).digits) {
       states.value[rank] = 'revealed'
     }
@@ -106,48 +131,52 @@ async function pollResults() {
     const incoming = data.results as DrawResult[]
     if (typeof data.total_entries === 'number') totalEntries.value = data.total_entries
 
+    // Bubble: detect new entries (skip on very first load to avoid flood)
+    const recentEntries = (data.recent_entries ?? []) as { name: string; number: string }[]
+    if (!initialLoad.value) {
+      for (const e of recentEntries) {
+        if (!seenNumbers.value.has(e.number)) {
+          seenNumbers.value.add(e.number)
+          spawnBubble(e.name, e.number)
+        }
+      }
+    } else {
+      // On first load just seed seenNumbers — no bubbles
+      for (const e of recentEntries) seenNumbers.value.add(e.number)
+    }
+
+    // Prize reveal logic
     for (const r of incoming) {
       const rank = r.prize_rank
       const digitCount = cfg(rank).digits
 
       if (!seenRanks.value.has(rank)) {
-        // New rank appeared: initialize display
         seenRanks.value.add(rank)
-        const initStr = '?'.repeat(digitCount)
-        displayNumbers.value[rank] = initStr
+        displayNumbers.value[rank] = '?'.repeat(digitCount)
         revealedCount.value[rank] = 0
         apiRevealedDigits.value[rank] = 0
         animQueue.value[rank] = []
         animating.value[rank] = false
 
         if (initialLoad.value) {
-          // On first load, show immediately up to already-revealed digits
           const alreadyRevealed = r.revealed_digits
           if (alreadyRevealed > 0) {
             const chars = '?'.repeat(digitCount).split('')
-            for (let i = 0; i < alreadyRevealed; i++) {
-              chars[i] = r.winning_number.charAt(i)
-            }
+            for (let i = 0; i < alreadyRevealed; i++) chars[i] = r.winning_number.charAt(i)
             displayNumbers.value[rank] = chars.join('')
             revealedCount.value[rank] = alreadyRevealed
             apiRevealedDigits.value[rank] = alreadyRevealed
           }
-          if (alreadyRevealed >= digitCount) {
-            states.value[rank] = 'revealed'
-          } else {
-            states.value[rank] = 'spinning'
-          }
+          states.value[rank] = alreadyRevealed >= digitCount ? 'revealed' : 'spinning'
         } else {
           states.value[rank] = 'spinning'
         }
       }
 
-      // Detect new digits revealed since last poll
       const prevRevealed = apiRevealedDigits.value[rank] ?? 0
       const nowRevealed = r.revealed_digits
       if (nowRevealed > prevRevealed) {
         apiRevealedDigits.value[rank] = nowRevealed
-        // Queue positions prevRevealed..nowRevealed-1
         for (let pos = prevRevealed; pos < nowRevealed && pos < digitCount; pos++) {
           ;(animQueue.value[rank] ??= []).push(pos)
         }
@@ -157,9 +186,7 @@ async function pollResults() {
 
     results.value = incoming
     initialLoad.value = false
-  } catch {
-    // silent — projector must not crash
-  }
+  } catch { /* silent — projector must not crash */ }
 }
 
 let interval: ReturnType<typeof setInterval>
@@ -177,7 +204,26 @@ function getResult(rank: number): DrawResult | undefined {
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#0b0c1a] text-white flex flex-col items-center justify-center px-4 py-12">
+  <main class="relative min-h-screen bg-[#0b0c1a] text-white flex flex-col items-center justify-center px-4 py-12 overflow-hidden">
+
+    <!-- Floating entry bubbles -->
+    <Teleport to="body">
+      <div
+        v-for="bubble in bubbles"
+        :key="bubble.id"
+        class="bubble-pill"
+        :style="{
+          left: `${bubble.x}vw`,
+          top: `${bubble.y}vh`,
+          opacity: bubble.visible ? 1 : 0,
+          transform: bubble.visible ? 'translateY(0) scale(1)' : 'translateY(12px) scale(0.92)',
+        }"
+      >
+        <span class="bubble-name">{{ bubble.name }}</span>
+        <span class="bubble-number">{{ bubble.number }}</span>
+      </div>
+    </Teleport>
+
     <h1 class="font-cookie text-5xl sm:text-7xl text-rose-400 mb-2 tracking-wide">สลากกินไม่แบ่ง กินอยู่คนเดียว</h1>
     <p class="text-gray-500 text-xs tracking-widest uppercase">งานแต่งงานส้ม &amp; ปัณณ์</p>
 
@@ -197,13 +243,11 @@ function getResult(rank: number): DrawResult | undefined {
         class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur px-8 py-7 text-center"
         :class="states[rank] === 'revealed' ? 'ring-1 ring-white/20' : ''"
       >
-        <!-- Prize label -->
         <p class="text-xs font-bold uppercase tracking-[0.25em] mb-1" :style="{ color: cfg(rank).accent }">
           {{ cfg(rank).label }}
         </p>
         <p class="text-[10px] text-white/30 mb-4 tracking-widest uppercase">{{ cfg(rank).sublabel }}</p>
 
-        <!-- Digit display -->
         <div class="flex items-center justify-center gap-2 sm:gap-3 mb-5">
           <template v-if="states[rank] === 'pending'">
             <div
@@ -229,7 +273,6 @@ function getResult(rank: number): DrawResult | undefined {
           </template>
         </div>
 
-        <!-- Winners -->
         <template v-if="states[rank] === 'revealed'">
           <div v-if="getResult(rank)?.winners.length" class="space-y-1">
             <p
@@ -249,3 +292,34 @@ function getResult(rank: number): DrawResult | undefined {
     </div>
   </main>
 </template>
+
+<style scoped>
+.bubble-pill {
+  position: fixed;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  white-space: nowrap;
+}
+
+.bubble-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.bubble-number {
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+  color: #fb7185;
+  opacity: 0.85;
+}
+</style>
