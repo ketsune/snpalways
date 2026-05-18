@@ -79,18 +79,18 @@ function spinSingleDigit(rank: number, pos: number, finalChar: string, onDone: (
 // Drain the queue for a rank, one digit at a time
 function drainQueue(rank: number, winningNumber: string) {
   if (animating.value[rank]) return
-  const queue = animQueue.value[rank]
+  const queue = animQueue.value[rank] ?? []
   if (queue.length === 0) {
     animating.value[rank] = false
     // Check if fully revealed
-    if (revealedCount.value[rank] >= cfg(rank).digits) {
+    if ((revealedCount.value[rank] ?? 0) >= cfg(rank).digits) {
       states.value[rank] = 'revealed'
     }
     return
   }
   animating.value[rank] = true
   const pos = queue.shift()!
-  spinSingleDigit(rank, pos, winningNumber[pos], () => {
+  spinSingleDigit(rank, pos, winningNumber.charAt(pos), () => {
     animating.value[rank] = false
     drainQueue(rank, winningNumber)
   })
@@ -124,7 +124,7 @@ async function pollResults() {
           if (alreadyRevealed > 0) {
             const chars = '?'.repeat(digitCount).split('')
             for (let i = 0; i < alreadyRevealed; i++) {
-              chars[i] = r.winning_number[i]
+              chars[i] = r.winning_number.charAt(i)
             }
             displayNumbers.value[rank] = chars.join('')
             revealedCount.value[rank] = alreadyRevealed
@@ -147,7 +147,7 @@ async function pollResults() {
         apiRevealedDigits.value[rank] = nowRevealed
         // Queue positions prevRevealed..nowRevealed-1
         for (let pos = prevRevealed; pos < nowRevealed && pos < digitCount; pos++) {
-          animQueue.value[rank].push(pos)
+          ;(animQueue.value[rank] ??= []).push(pos)
         }
         drainQueue(rank, r.winning_number)
       }
