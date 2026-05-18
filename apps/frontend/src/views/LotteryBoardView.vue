@@ -86,19 +86,21 @@ function spinSingleDigit(rank: number, pos: number, finalChar: string, onDone: (
   const digitCount = cfg(rank).digits
   const currentChars = (displayNumbers.value[rank] ?? '?'.repeat(digitCount)).split('')
   playDrawSound()
-  const TOTAL_TICKS = 20
+  // 30 ticks: delay ramps 20ms → 320ms = ~5s total, ease-out feel
+  const TOTAL_TICKS = 30
   let ticks = 0
   const tick = () => {
     currentChars[pos] = String(Math.floor(Math.random() * 10))
     displayNumbers.value[rank] = currentChars.join('')
     ticks++
     if (ticks < TOTAL_TICKS) {
-      setTimeout(tick, 40 + Math.floor((ticks / TOTAL_TICKS) * 140))
+      const delay = 20 + Math.floor((ticks / TOTAL_TICKS) * 300)
+      setTimeout(tick, delay)
     } else {
       currentChars[pos] = finalChar
       displayNumbers.value[rank] = currentChars.join('')
       revealedCount.value[rank] = pos + 1
-      setTimeout(onDone, 300)
+      setTimeout(onDone, 400)
     }
   }
   tick()
