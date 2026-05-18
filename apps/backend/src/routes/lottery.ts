@@ -198,8 +198,8 @@ export const lotteryRoutes = new Elysia()
           const draws = yield* sql<{ id: number; prize_rank: number; winning_number: string; revealed_digits: number; drawn_at: string }>`
             select id, prize_rank, winning_number, revealed_digits, drawn_at from lottery_draws order by prize_rank asc
           `;
-          const entries = yield* sql<{ name: string; number: string }>`
-            select name, number from lottery_entries
+          const entries = yield* sql<{ name: string; number: string; created_at: string }>`
+            select name, number, created_at from lottery_entries order by created_at asc
           `;
           return { draws, entries };
         }).pipe(Effect.provide(LiveDatabase))
@@ -210,7 +210,8 @@ export const lotteryRoutes = new Elysia()
         winners: entries.filter((e) => extract(e.number, draw.prize_rank) === draw.winning_number),
       }));
 
-      return { success: true, results, total_entries: entries.length };
+      const recent_entries = entries.slice(-15).reverse().map(({ name, number }) => ({ name, number }));
+      return { success: true, results, total_entries: entries.length, recent_entries };
     } catch (error) {
       console.error('Failed to fetch lottery results', error);
       return { success: false, message: 'ไม่สามารถดึงผลการจับรางวัลได้' };
