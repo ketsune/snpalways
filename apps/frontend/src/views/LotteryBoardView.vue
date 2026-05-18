@@ -21,6 +21,7 @@ const PRIZE_CONFIG: Record<Rank, { label: string; sublabel: string; digits: numb
 const cfg = (rank: number) => PRIZE_CONFIG[rank as Rank]
 
 const results = ref<DrawResult[]>([])
+const totalEntries = ref<number | null>(null)
 // Characters currently shown per rank (string of digits/?)
 const displayNumbers = ref<Record<number, string>>({})
 // How many digits are fully revealed (locked in) per rank
@@ -103,6 +104,7 @@ async function pollResults() {
     if (!data.success) return
 
     const incoming = data.results as DrawResult[]
+    if (typeof data.total_entries === 'number') totalEntries.value = data.total_entries
 
     for (const r of incoming) {
       const rank = r.prize_rank
@@ -177,7 +179,16 @@ function getResult(rank: number): DrawResult | undefined {
 <template>
   <main class="min-h-screen bg-[#0b0c1a] text-white flex flex-col items-center justify-center px-4 py-12">
     <h1 class="font-cookie text-5xl sm:text-7xl text-rose-400 mb-2 tracking-wide">สลากกินไม่แบ่ง กินอยู่คนเดียว</h1>
-    <p class="text-gray-500 text-xs mb-10 tracking-widest uppercase">งานแต่งงานส้ม &amp; ปัณณ์</p>
+    <p class="text-gray-500 text-xs tracking-widest uppercase">งานแต่งงานส้ม &amp; ปัณณ์</p>
+
+    <!-- Participant count -->
+    <div class="mt-4 mb-8 flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2">
+      <span class="text-gray-400 text-sm tracking-wide">ผู้เข้าร่วม</span>
+      <span class="font-mono text-2xl font-bold text-rose-400">
+        {{ totalEntries !== null ? totalEntries : '—' }}
+      </span>
+      <span class="text-gray-500 text-sm">คน</span>
+    </div>
 
     <div class="w-full max-w-2xl space-y-6">
       <div

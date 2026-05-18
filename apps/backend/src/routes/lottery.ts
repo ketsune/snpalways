@@ -210,7 +210,7 @@ export const lotteryRoutes = new Elysia()
         winners: entries.filter((e) => extract(e.number, draw.prize_rank) === draw.winning_number),
       }));
 
-      return { success: true, results };
+      return { success: true, results, total_entries: entries.length };
     } catch (error) {
       console.error('Failed to fetch lottery results', error);
       return { success: false, message: 'ไม่สามารถดึงผลการจับรางวัลได้' };
