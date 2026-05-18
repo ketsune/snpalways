@@ -62,8 +62,8 @@ async function submit() {
 
       <div class="mt-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm text-sm text-gray-600 space-y-1">
         <p><span class="font-semibold text-yellow-600">รางวัลที่ 1</span> — ตรงทุก 6 หลัก</p>
-        <p><span class="font-semibold text-gray-500">รางวัลที่ 2</span> — 3 หลักท้ายตรง</p>
-        <p><span class="font-semibold text-amber-700">รางวัลที่ 3</span> — 2 หลักท้ายตรง</p>
+        <p><span class="font-semibold text-gray-500">รางวัลที่ 2</span> — 3 หลักแรกตรง</p>
+        <p><span class="font-semibold text-amber-700">รางวัลที่ 3</span> — 3 หลักท้ายตรง</p>
         <p class="pt-1 text-xs text-gray-400">แต่ละหมายเลขมีได้เพียงคนเดียว — มาก่อนได้ก่อน</p>
       </div>
 

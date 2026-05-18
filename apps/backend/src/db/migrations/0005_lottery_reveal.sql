@@ -1,0 +1,1 @@
+ALTER TABLE lottery_draws ADD COLUMN revealed_digits INTEGER NOT NULL DEFAULT 0;

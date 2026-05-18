@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { apiFetch } from '@/lib/api'
 
 type Submission = {
@@ -37,55 +37,113 @@ onMounted(() => {
 onUnmounted(() => {
   if (pollTimer) clearInterval(pollTimer)
 })
+
+// Duration scales with number of cards — each card gets ~4s of screen time
+const marqueeStyle = computed(() => {
+  const duration = Math.max(20, submissions.value.length * 4)
+  return { '--marquee-duration': `${duration}s` }
+})
 </script>
 
 <template>
-  <main class="min-h-screen bg-gradient-to-br from-rose-50 via-white to-rose-100 px-6 py-8">
-    <header class="mb-8 text-center">
+  <main class="min-h-screen bg-gradient-to-br from-rose-50 via-white to-rose-100 overflow-hidden px-0 py-8">
+    <header class="mb-8 text-center px-6">
       <p class="text-sm uppercase tracking-[0.3em] text-rose-600">Kaywalee &amp; Supanat · Wedding Activity</p>
       <h1 class="font-cookie mt-2 text-6xl sm:text-7xl text-rose-600">มุมคนโสดโดยความสามารถ</h1>
       <p class="mt-2 text-gray-600">มาทำความรู้จักเพื่อนโสดสุดน่ารักของเรากันเถอะ!</p>
     </header>
 
-    <p v-if="error" class="mb-4 text-center text-rose-700">{{ error }}</p>
+    <p v-if="error" class="mb-4 text-center text-rose-700 px-6">{{ error }}</p>
 
     <div
       v-if="submissions.length === 0 && !error"
-      class="flex min-h-[50vh] flex-col items-center justify-center text-center"
+      class="flex min-h-[50vh] flex-col items-center justify-center text-center px-6"
     >
       <p class="font-cookie text-4xl text-rose-500">ข้อมูลจะปรากฏที่นี่</p>
       <p class="mt-2 text-gray-500">สแกน QR Code เพื่อเป็นคนแรกที่แนะนำเพื่อน</p>
     </div>
 
-    <section
-      class="grid gap-6"
-      style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr))"
+    <!-- Conveyor belt — duplicated for seamless loop -->
+    <div
+      v-if="submissions.length > 0"
+      class="relative w-full overflow-hidden"
+      :style="marqueeStyle"
     >
-      <article
-        v-for="entry in submissions"
-        :key="entry.id"
-        class="flex flex-col overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl"
-      >
-        <div class="aspect-[4/5] w-full bg-rose-50">
-          <img
-            v-if="entry.photo_base64"
-            :src="entry.photo_base64"
-            :alt="entry.friend_name"
-            class="h-full w-full object-cover"
-          />
-          <div
-            v-else
-            class="flex h-full w-full items-center justify-center font-cookie text-6xl text-rose-400"
-          >
-            {{ entry.friend_name.charAt(0).toUpperCase() }}
+      <!-- Fade edges -->
+      <div class="pointer-events-none absolute inset-y-0 left-0 w-16 z-10 bg-gradient-to-r from-rose-50 to-transparent"></div>
+      <div class="pointer-events-none absolute inset-y-0 right-0 w-16 z-10 bg-gradient-to-l from-rose-100 to-transparent"></div>
+
+      <div class="flex gap-5 animate-marquee w-max hover:pause">
+        <!-- Original set -->
+        <article
+          v-for="entry in submissions"
+          :key="`a-${entry.id}`"
+          class="flex-none w-64 flex flex-col overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-lg"
+        >
+          <div class="aspect-[4/5] w-full bg-rose-50">
+            <img
+              v-if="entry.photo_base64"
+              :src="entry.photo_base64"
+              :alt="entry.friend_name"
+              class="h-full w-full object-cover"
+            />
+            <div
+              v-else
+              class="flex h-full w-full items-center justify-center font-cookie text-6xl text-rose-400"
+            >
+              {{ entry.friend_name.charAt(0).toUpperCase() }}
+            </div>
           </div>
-        </div>
-        <div class="flex flex-1 flex-col gap-2 p-4">
-          <h2 class="font-cookie text-3xl leading-tight text-rose-600">{{ entry.friend_name }}</h2>
-          <p v-if="entry.bio" class="text-sm text-gray-700">{{ entry.bio }}</p>
-          <p class="mt-auto text-sm font-semibold text-rose-700 break-words">{{ entry.contact }}</p>
-        </div>
-      </article>
-    </section>
+          <div class="flex flex-1 flex-col gap-2 p-4">
+            <h2 class="font-cookie text-3xl leading-tight text-rose-600">{{ entry.friend_name }}</h2>
+            <p v-if="entry.bio" class="text-sm text-gray-700 line-clamp-3">{{ entry.bio }}</p>
+            <p class="mt-auto text-sm font-semibold text-rose-700 break-words">{{ entry.contact }}</p>
+          </div>
+        </article>
+
+        <!-- Duplicate set for seamless loop -->
+        <article
+          v-for="entry in submissions"
+          :key="`b-${entry.id}`"
+          class="flex-none w-64 flex flex-col overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-lg"
+        >
+          <div class="aspect-[4/5] w-full bg-rose-50">
+            <img
+              v-if="entry.photo_base64"
+              :src="entry.photo_base64"
+              :alt="entry.friend_name"
+              class="h-full w-full object-cover"
+            />
+            <div
+              v-else
+              class="flex h-full w-full items-center justify-center font-cookie text-6xl text-rose-400"
+            >
+              {{ entry.friend_name.charAt(0).toUpperCase() }}
+            </div>
+          </div>
+          <div class="flex flex-1 flex-col gap-2 p-4">
+            <h2 class="font-cookie text-3xl leading-tight text-rose-600">{{ entry.friend_name }}</h2>
+            <p v-if="entry.bio" class="text-sm text-gray-700 line-clamp-3">{{ entry.bio }}</p>
+            <p class="mt-auto text-sm font-semibold text-rose-700 break-words">{{ entry.contact }}</p>
+          </div>
+        </article>
+      </div>
+    </div>
   </main>
 </template>
+
+<style scoped>
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+}
+
+.animate-marquee:hover,
+.hover\:pause:hover {
+  animation-play-state: paused;
+}
+</style>

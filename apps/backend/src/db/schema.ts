@@ -41,6 +41,7 @@ export const lotteryDraws = pgTable('lottery_draws', {
   id: serial('id').primaryKey(),
   prizeRank: integer('prize_rank').notNull().unique(),
   winningNumber: text('winning_number').notNull(),
+  revealedDigits: integer('revealed_digits').notNull().default(0),
   drawnAt: timestamp('drawn_at', { withTimezone: true }).defaultNow().notNull(),
 });
 

@@ -36,6 +36,13 @@
       "when": 1778400000000,
       "tag": "0004_seats",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1747526400000,
+      "tag": "0005_lottery_reveal",
+      "breakpoints": true
     }
   ]
 }

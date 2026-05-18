@@ -4,8 +4,10 @@ import { apiFetch } from '@/lib/api'
 
 type Entry = { id: number; name: string; number: string; created_at: string }
 type DrawResult = {
+  id: number
   prize_rank: number
   winning_number: string
+  revealed_digits: number
   drawn_at: string
   winners: { name: string; number: string }[]
 }
@@ -14,7 +16,7 @@ type Rank = 1 | 2 | 3
 const PRIZE_CONFIG: Record<Rank, { label: string; digits: number }> = {
   1: { label: 'รางวัลที่ 1', digits: 6 },
   2: { label: 'รางวัลที่ 2', digits: 3 },
-  3: { label: 'รางวัลที่ 3', digits: 2 },
+  3: { label: 'รางวัลที่ 3', digits: 3 },
 }
 const cfg = (rank: number) => PRIZE_CONFIG[rank as Rank]
 
@@ -26,6 +28,7 @@ const entries = ref<Entry[]>([])
 const results = ref<DrawResult[]>([])
 const drawing = ref<number | null>(null)
 const drawError = ref<string | null>(null)
+const revealBusy = ref(false)
 
 const resetDrawsConfirm = ref(false)
 const fullResetModal = ref(false)
@@ -69,6 +72,25 @@ async function draw(prizeRank: number) {
     drawError.value = err instanceof Error ? err.message : 'Draw failed'
   } finally {
     drawing.value = null
+  }
+}
+
+async function revealNextDigit(drawId: number) {
+  if (revealBusy.value) return
+  revealBusy.value = true
+  drawError.value = null
+  try {
+    const res = await apiFetch(`/api/lottery/draw/${drawId}/reveal`, {
+      method: 'PATCH',
+      headers: { 'x-mod-token': token.value },
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok || !data?.success) throw new Error(data?.message || 'Reveal failed')
+    await load()
+  } catch (err: unknown) {
+    drawError.value = err instanceof Error ? err.message : 'Reveal failed'
+  } finally {
+    revealBusy.value = false
   }
 }
 
@@ -207,16 +229,49 @@ const winnerNumbers = computed(() => {
               <p class="text-xs text-gray-400 mb-3">{{ cfg(rank).digits }} หลัก</p>
 
               <template v-if="getResult(rank)">
-                <p class="font-mono text-3xl font-bold tracking-widest text-gray-900 mb-3">
+                <!-- Full winning number always visible to mod -->
+                <p class="font-mono text-3xl font-bold tracking-widest text-gray-900 mb-2">
                   {{ getResult(rank)!.winning_number }}
                 </p>
-                <div v-if="getResult(rank)!.winners.length" class="space-y-1">
-                  <p v-for="w in getResult(rank)!.winners" :key="w.number" class="text-green-700 font-semibold text-sm">
-                    🎉 {{ w.name }}
+
+                <!-- Reveal progress -->
+                <div class="mb-3">
+                  <p class="text-xs text-gray-400 mb-1">
+                    เปิดบนบอร์ด: {{ getResult(rank)!.revealed_digits }} / {{ cfg(rank).digits }} หลัก
                   </p>
+                  <!-- Digit pip indicators -->
+                  <div class="flex justify-center gap-1">
+                    <span
+                      v-for="i in cfg(rank).digits"
+                      :key="i"
+                      class="inline-block h-2 w-2 rounded-full"
+                      :class="i <= getResult(rank)!.revealed_digits ? 'bg-rose-500' : 'bg-gray-200'"
+                    ></span>
+                  </div>
                 </div>
-                <p v-else class="text-gray-400 text-xs">ไม่มีผู้ถูกรางวัล</p>
+
+                <!-- Reveal next digit button -->
+                <button
+                  v-if="getResult(rank)!.revealed_digits < cfg(rank).digits"
+                  :disabled="revealBusy"
+                  class="rounded-full bg-rose-600 px-4 py-2 text-sm text-white hover:bg-rose-700 disabled:opacity-50 mb-3"
+                  @click="revealNextDigit(getResult(rank)!.id)"
+                >
+                  {{ revealBusy ? 'กำลังเปิด…' : `เปิดหลักที่ ${getResult(rank)!.revealed_digits + 1}` }}
+                </button>
+                <p v-else class="text-xs text-green-600 font-semibold mb-3">✓ เปิดครบแล้ว</p>
+
+                <!-- Winners (only shown when fully revealed) -->
+                <template v-if="getResult(rank)!.revealed_digits >= cfg(rank).digits">
+                  <div v-if="getResult(rank)!.winners.length" class="space-y-1">
+                    <p v-for="w in getResult(rank)!.winners" :key="w.number" class="text-green-700 font-semibold text-sm">
+                      🎉 {{ w.name }}
+                    </p>
+                  </div>
+                  <p v-else class="text-gray-400 text-xs">ไม่มีผู้ถูกรางวัล</p>
+                </template>
               </template>
+
               <template v-else>
                 <p class="font-mono text-3xl font-bold tracking-widest text-gray-200 mb-3">
                   {{ '?'.repeat(cfg(rank).digits) }}
