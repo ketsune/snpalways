@@ -21,14 +21,15 @@ export const lotteryRoutes = new Elysia()
       set.status = 400;
       return { success: false, message: 'หมายเลขต้องมี 6 หลักเท่านั้น' };
     }
+    const tableNo = body.table_no?.trim() || null;
     try {
       const result = await Effect.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
-          const rows = yield* sql<{ id: number; name: string; number: string; created_at: string }>`
-            insert into lottery_entries (name, number)
-            values (${body.name.trim()}, ${num})
-            returning id, name, number, created_at
+          const rows = yield* sql<{ id: number; name: string; number: string; table_no: string | null; created_at: string }>`
+            insert into lottery_entries (name, number, table_no)
+            values (${body.name.trim()}, ${num}, ${tableNo})
+            returning id, name, number, table_no, created_at
           `;
           return rows[0];
         }).pipe(Effect.provide(LiveDatabase))
@@ -46,6 +47,7 @@ export const lotteryRoutes = new Elysia()
     body: t.Object({
       name: t.String({ minLength: 1, maxLength: 120 }),
       number: t.String({ minLength: 1, maxLength: 6 }),
+      table_no: t.Optional(t.String({ maxLength: 20 })),
     }),
   })
   .get('/api/lottery/numbers', async ({ headers, set }) => {
@@ -71,8 +73,8 @@ export const lotteryRoutes = new Elysia()
       const rows = await Effect.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
-          return yield* sql<{ id: number; name: string; number: string; created_at: string }>`
-            select id, name, number, created_at from lottery_entries order by created_at asc
+          return yield* sql<{ id: number; name: string; number: string; table_no: string | null; created_at: string }>`
+            select id, name, number, table_no, created_at from lottery_entries order by created_at asc
           `;
         }).pipe(Effect.provide(LiveDatabase))
       );
@@ -198,8 +200,8 @@ export const lotteryRoutes = new Elysia()
           const draws = yield* sql<{ id: number; prize_rank: number; winning_number: string; revealed_digits: number; drawn_at: string }>`
             select id, prize_rank, winning_number, revealed_digits, drawn_at from lottery_draws order by prize_rank asc
           `;
-          const entries = yield* sql<{ name: string; number: string; created_at: string }>`
-            select name, number, created_at from lottery_entries order by created_at asc
+          const entries = yield* sql<{ name: string; number: string; table_no: string | null; created_at: string }>`
+            select name, number, table_no, created_at from lottery_entries order by created_at asc
           `;
           return { draws, entries };
         }).pipe(Effect.provide(LiveDatabase))

@@ -31,6 +31,7 @@ export const lotteryEntries = pgTable('lottery_entries', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   number: text('number').notNull().unique(),
+  tableNo: text('table_no'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 

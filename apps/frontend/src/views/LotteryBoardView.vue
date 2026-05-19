@@ -9,13 +9,14 @@ type DrawResult = {
   winning_number: string
   revealed_digits: number
   drawn_at: string
-  winners: { name: string; number: string }[]
+  winners: { name: string; number: string; table_no: string | null }[]
 }
 
 type Bubble = {
   id: number
   name: string
   number: string
+  table_no: string | null
   x: number  // vw %
   y: number  // vh %
   visible: boolean
@@ -38,14 +39,14 @@ const seenNumbers = ref(new Set<string>())
 const initialLoad = ref(true)
 let bubbleIdSeq = 0
 
-function spawnBubble(name: string, number: string) {
+function spawnBubble(name: string, number: string, table_no: string | null) {
   const id = ++bubbleIdSeq
   // Keep away from center column (prize cards): left 5–30% or right 65–90%
   const side = Math.random() < 0.5
   const x = side ? 5 + Math.random() * 25 : 65 + Math.random() * 25
   const y = 10 + Math.random() * 75
 
-  bubbles.value.push({ id, name, number, x, y, visible: false })
+  bubbles.value.push({ id, name, number, table_no, x, y, visible: false })
 
   // Tick to let Vue render the element, then fade in
   nextTick(() => {
@@ -134,12 +135,12 @@ async function pollResults() {
     if (typeof data.total_entries === 'number') totalEntries.value = data.total_entries
 
     // Bubble: detect new entries (skip on very first load to avoid flood)
-    const recentEntries = (data.recent_entries ?? []) as { name: string; number: string }[]
+    const recentEntries = (data.recent_entries ?? []) as { name: string; number: string; table_no: string | null }[]
     if (!initialLoad.value) {
       for (const e of recentEntries) {
         if (!seenNumbers.value.has(e.number)) {
           seenNumbers.value.add(e.number)
-          spawnBubble(e.name, e.number)
+          spawnBubble(e.name, e.number, e.table_no ?? null)
         }
       }
     } else {
@@ -222,6 +223,7 @@ function getResult(rank: number): DrawResult | undefined {
         }"
       >
         <span class="bubble-name">{{ bubble.name }}</span>
+        <span v-if="bubble.table_no" class="bubble-table">โต๊ะ {{ bubble.table_no }}</span>
         <span class="bubble-number">{{ bubble.number }}</span>
       </div>
     </Teleport>
@@ -283,7 +285,8 @@ function getResult(rank: number): DrawResult | undefined {
               class="text-lg sm:text-2xl font-semibold text-white"
             >
               🎉 {{ w.name }}
-              <span class="font-mono text-sm font-normal opacity-50">{{ w.number }}</span>
+              <span v-if="w.table_no" class="ml-1 text-base font-normal text-rose-300">โต๊ะ {{ w.table_no }}</span>
+              <span class="font-mono text-sm font-normal opacity-40 ml-1">{{ w.number }}</span>
             </p>
           </div>
           <p v-else class="text-gray-600 text-sm">ไม่มีผู้ถูกรางวัล</p>
@@ -318,10 +321,16 @@ function getResult(rank: number): DrawResult | undefined {
   color: #fff;
 }
 
+.bubble-table {
+  font-size: 0.8rem;
+  color: #fda4af;
+  opacity: 0.9;
+}
+
 .bubble-number {
   font-family: ui-monospace, monospace;
   font-size: 0.8rem;
   color: #fb7185;
-  opacity: 0.85;
+  opacity: 0.7;
 }
 </style>

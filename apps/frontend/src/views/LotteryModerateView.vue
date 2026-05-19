@@ -2,14 +2,14 @@
 import { ref, computed } from 'vue'
 import { apiFetch } from '@/lib/api'
 
-type Entry = { id: number; name: string; number: string; created_at: string }
+type Entry = { id: number; name: string; number: string; table_no: string | null; created_at: string }
 type DrawResult = {
   id: number
   prize_rank: number
   winning_number: string
   revealed_digits: number
   drawn_at: string
-  winners: { name: string; number: string }[]
+  winners: { name: string; number: string; table_no: string | null }[]
 }
 
 type Rank = 1 | 2 | 3
@@ -305,6 +305,7 @@ const winnerNumbers = computed(() => {
             >
               <span class="font-mono font-bold">{{ entry.number }}</span>
               <span class="ml-2 text-gray-500">{{ entry.name }}</span>
+              <span v-if="entry.table_no" class="ml-1 text-xs text-gray-400">โต๊ะ {{ entry.table_no }}</span>
             </div>
             <p v-if="entries.length === 0" class="text-gray-400 text-sm">ยังไม่มีผู้เข้าร่วม</p>
           </div>
