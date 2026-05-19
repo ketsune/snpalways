@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { apiFetch } from '@/lib/api'
 
 const name = ref('')
+const tableNo = ref('')
 const number = ref('')
 const loading = ref(false)
 const success = ref<string | null>(null)
@@ -35,12 +36,13 @@ async function submit() {
     const res = await apiFetch('/api/lottery', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name.value.trim(), number: number.value.trim() }),
+      body: JSON.stringify({ name: name.value.trim(), number: number.value.trim(), table_no: tableNo.value.trim() || undefined }),
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok || !data?.success) throw new Error(data?.message || 'ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง')
     success.value = `${name.value.trim()} เข้าร่วมลุ้นโชคแล้ว! ขอให้โชคดี! 🍀`
     name.value = ''
+    tableNo.value = ''
     number.value = ''
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'
@@ -76,6 +78,20 @@ async function submit() {
             required
             type="text"
             placeholder="ชื่อที่จะแสดงบนจอ"
+            class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm placeholder:text-gray-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
+          />
+        </div>
+
+        <div>
+          <label for="tableNo" class="block text-sm font-medium text-gray-700">
+            หมายเลขโต๊ะ <span class="text-gray-400 font-normal">(ไม่บังคับ)</span>
+          </label>
+          <input
+            id="tableNo"
+            v-model="tableNo"
+            type="text"
+            maxlength="20"
+            placeholder="เช่น 5, A3"
             class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm placeholder:text-gray-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
           />
         </div>
