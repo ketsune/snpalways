@@ -228,7 +228,7 @@ function getResult(rank: number): DrawResult | undefined {
       </div>
     </Teleport>
 
-    <h1 class="font-cookie text-5xl sm:text-7xl text-rose-400 mb-2 tracking-wide">สลากกินไม่แบ่ง กินอยู่คนเดียว</h1>
+    <h1 class="font-cookie text-5xl sm:text-4xl text-rose-400 mb-2 tracking-wide">สลากกินไม่แบ่ง กินอยู่คนเดียว</h1>
     <p class="text-gray-500 text-xs tracking-widest uppercase">งานแต่งงานส้ม &amp; ปัณณ์</p>
 
     <!-- Participant count -->
