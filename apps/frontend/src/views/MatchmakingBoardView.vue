@@ -40,9 +40,9 @@ onUnmounted(() => {
 })
 
 // Duration scales with number of cards — each card gets ~2.5s of screen time (faster)
-const marqueeStyle = computed(() => {
-  const duration = Math.max(12, submissions.value.length * 2.5)
-  return { '--marquee-duration': `${duration}s` }
+const marqueeDuration = computed(() => {
+  const seconds = Math.max(12, submissions.value.length * 2.5)
+  return `${seconds}s`
 })
 </script>
 
@@ -68,13 +68,12 @@ const marqueeStyle = computed(() => {
     <div
       v-if="submissions.length > 0"
       class="relative w-full overflow-hidden"
-      :style="marqueeStyle"
     >
       <!-- Fade edges -->
       <div class="pointer-events-none absolute inset-y-0 left-0 w-16 z-10 bg-gradient-to-r from-rose-50 to-transparent"></div>
       <div class="pointer-events-none absolute inset-y-0 right-0 w-16 z-10 bg-gradient-to-l from-rose-100 to-transparent"></div>
 
-      <div class="flex gap-5 animate-marquee w-max hover:pause">
+      <div class="flex gap-5 animate-marquee w-max hover:pause" :style="{ animationDuration: marqueeDuration }">
         <!-- QR card (original) -->
         <article class="flex-none w-64 flex flex-col items-center justify-center overflow-hidden rounded-3xl border-2 border-rose-300 bg-rose-50 shadow-lg px-4 py-6 gap-3">
           <p class="font-cookie text-2xl text-rose-600 text-center leading-tight">แนะนำเพื่อนโสด<br>ของคุณ!</p>
@@ -154,7 +153,7 @@ const marqueeStyle = computed(() => {
 }
 
 .animate-marquee {
-  animation: marquee var(--marquee-duration, 40s) linear infinite;
+  animation: marquee 40s linear infinite;
 }
 
 .animate-marquee:hover,
