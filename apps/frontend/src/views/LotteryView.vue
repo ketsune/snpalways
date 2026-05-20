@@ -143,7 +143,7 @@ async function submit() {
             </button>
             <button
               type="button"
-              @click="number = ''"
+              @click="number = ''; error = null; success = null"
               :disabled="number.length === 0"
               class="col-span-3 flex h-12 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 text-sm font-medium text-gray-600 shadow-sm transition-all hover:bg-gray-200 active:bg-gray-300 disabled:opacity-50"
             >
