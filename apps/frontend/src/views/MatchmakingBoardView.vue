@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { apiFetch } from '@/lib/api'
-import qrMatchmakingUrl from '@/assets/qr-matchmaking'
+import qrMatchmakingUrl from '@/assets/qr-matchmaking.jpg'
 
 type Submission = {
   id: number
