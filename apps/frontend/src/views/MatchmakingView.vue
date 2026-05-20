@@ -118,13 +118,13 @@ async function submit() {
 
       <form class="mt-8 space-y-6" @submit.prevent="submit">
         <div>
-          <label for="submitterName" class="block text-sm font-medium text-gray-700">ชื่อของคุณ</label>
+          <label for="submitterName" class="block text-sm font-medium text-gray-700">ชื่อของคุณ (เก็บเป็นความลับ)</label>
           <input
             id="submitterName"
             v-model="submitterName"
             required
             type="text"
-            placeholder="เพื่อนจะได้รู้ว่าใครส่งมา"
+            placeholder="ชื่อของคุณ (เราจะไม่บอกใคร)"
             class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm placeholder:text-gray-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
           />
         </div>
@@ -142,7 +142,7 @@ async function submit() {
         </div>
 
         <div>
-          <label for="contact" class="block text-sm font-medium text-gray-700">ช่องทางติดต่อ</label>
+          <label for="contact" class="block text-sm font-medium text-gray-700">ช่องทางติดต่อของคนโสด</label>
           <input
             id="contact"
             v-model="contact"
@@ -154,7 +154,7 @@ async function submit() {
         </div>
 
         <div>
-          <label for="bio" class="block text-sm font-medium text-gray-700">แนะนำตัวสั้น ๆ <span class="text-gray-400">(ไม่บังคับ)</span></label>
+          <label for="bio" class="block text-sm font-medium text-gray-700">แนะนำคนโสดสั้น ๆ <span class="text-gray-400">(ไม่บังคับ)</span></label>
           <textarea
             id="bio"
             v-model="bio"
