@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { Effect } from 'effect';
 import { SqlClient } from '@effect/sql';
-import { LiveDatabase } from '../db';
+import { dbRuntime } from '../db';
 import { requireServiceKey, requireModToken } from '../lib/auth';
 import { isUniqueViolation } from '../lib/errors';
 
@@ -23,7 +23,7 @@ export const lotteryRoutes = new Elysia()
     }
     const tableNo = body.table_no?.trim() || null;
     try {
-      const result = await Effect.runPromise(
+      const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const rows = yield* sql<{ id: number; name: string; number: string; table_no: string | null; created_at: string }>`
@@ -32,7 +32,7 @@ export const lotteryRoutes = new Elysia()
             returning id, name, number, table_no, created_at
           `;
           return rows[0];
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, entry: result };
     } catch (error: unknown) {
@@ -54,11 +54,11 @@ export const lotteryRoutes = new Elysia()
     const authErr = requireServiceKey(headers, set);
     if (authErr) return authErr;
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<{ number: string }>`select number from lottery_entries`;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, numbers: rows.map(r => r.number) };
     } catch (error) {
@@ -70,13 +70,13 @@ export const lotteryRoutes = new Elysia()
     const authErr = requireModToken(headers, set);
     if (authErr) return authErr;
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<{ id: number; name: string; number: string; table_no: string | null; created_at: string }>`
             select id, name, number, table_no, created_at from lottery_entries order by created_at asc
           `;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, entries: rows };
     } catch (error) {
@@ -93,13 +93,13 @@ export const lotteryRoutes = new Elysia()
       return { success: false, message: 'ลำดับรางวัลต้องเป็น 1, 2 หรือ 3 เท่านั้น' };
     }
     try {
-      const { entries, draws } = await Effect.runPromise(
+      const { entries, draws } = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const entries = yield* sql<{ name: string; number: string }>`select name, number from lottery_entries`;
           const draws = yield* sql<{ prize_rank: number; winning_number: string }>`select prize_rank, winning_number from lottery_draws`;
           return { entries, draws };
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
 
       if (entries.length === 0) {
@@ -138,14 +138,14 @@ export const lotteryRoutes = new Elysia()
       const pool = [...new Set(eligibleEntries.map(e => extract(e.number, body.prizeRank)))];
       const winningNumber = pool[Math.floor(Math.random() * pool.length)];
 
-      await Effect.runPromise(
+      await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           yield* sql`
             insert into lottery_draws (prize_rank, winning_number, revealed_digits)
             values (${body.prizeRank}, ${winningNumber}, 0)
           `;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, winningNumber };
     } catch (error: unknown) {
@@ -168,7 +168,7 @@ export const lotteryRoutes = new Elysia()
       return { success: false, message: 'invalid draw id' };
     }
     try {
-      const updated = await Effect.runPromise(
+      const updated = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const rows = yield* sql<{ id: number; prize_rank: number; revealed_digits: number }>`
@@ -178,7 +178,7 @@ export const lotteryRoutes = new Elysia()
             returning id, prize_rank, revealed_digits
           `;
           return rows[0];
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       if (!updated) {
         set.status = 404;
@@ -194,7 +194,7 @@ export const lotteryRoutes = new Elysia()
     const authErr = requireServiceKey(headers, set);
     if (authErr) return authErr;
     try {
-      const { draws, entries } = await Effect.runPromise(
+      const { draws, entries } = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const draws = yield* sql<{ id: number; prize_rank: number; winning_number: string; revealed_digits: number; drawn_at: string }>`
@@ -204,7 +204,7 @@ export const lotteryRoutes = new Elysia()
             select name, number, table_no, created_at from lottery_entries order by created_at asc
           `;
           return { draws, entries };
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
 
       const results = draws.map((draw) => ({
@@ -223,11 +223,11 @@ export const lotteryRoutes = new Elysia()
     const authErr = requireModToken(headers, set);
     if (authErr) return authErr;
     try {
-      await Effect.runPromise(
+      await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           yield* sql`delete from lottery_draws`;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true };
     } catch (error) {
@@ -239,12 +239,12 @@ export const lotteryRoutes = new Elysia()
     const authErr = requireModToken(headers, set);
     if (authErr) return authErr;
     try {
-      await Effect.runPromise(
+      await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           yield* sql`delete from lottery_draws`;
           yield* sql`delete from lottery_entries`;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true };
     } catch (error) {
