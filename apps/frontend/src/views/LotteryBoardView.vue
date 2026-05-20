@@ -3,6 +3,21 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { apiFetch } from '@/lib/api'
 import drawSoundUrl from '@/assets/sound-effect/lottery-drawing-effect.mp3'
 
+// Pre-load audio once and keep reference; browser autoplay unlock on first user gesture
+let drawAudio: HTMLAudioElement | null = null
+let audioUnlocked = false
+
+function unlockAudio() {
+  if (audioUnlocked) return
+  audioUnlocked = true
+  // Pre-load the file so it's ready to play instantly
+  drawAudio = new Audio(drawSoundUrl)
+  drawAudio.load()
+  window.removeEventListener('click', unlockAudio)
+  window.removeEventListener('touchstart', unlockAudio)
+  window.removeEventListener('keydown', unlockAudio)
+}
+
 type DrawResult = {
   id: number
   prize_rank: number
@@ -78,8 +93,12 @@ const animating = ref<Record<number, boolean>>({ 1: false, 2: false, 3: false })
 
 function playDrawSound() {
   try {
-    const audio = new Audio(drawSoundUrl)
-    audio.play().catch(() => {})
+    if (!drawAudio) {
+      drawAudio = new Audio(drawSoundUrl)
+      drawAudio.load()
+    }
+    drawAudio.currentTime = 0
+    drawAudio.play().catch(() => {})
   } catch { /* silent */ }
 }
 
@@ -195,11 +214,19 @@ async function pollResults() {
 let interval: ReturnType<typeof setInterval>
 
 onMounted(() => {
+  window.addEventListener('click', unlockAudio)
+  window.addEventListener('touchstart', unlockAudio)
+  window.addEventListener('keydown', unlockAudio)
   pollResults()
   interval = setInterval(pollResults, 3000)
 })
 
-onUnmounted(() => clearInterval(interval))
+onUnmounted(() => {
+  clearInterval(interval)
+  window.removeEventListener('click', unlockAudio)
+  window.removeEventListener('touchstart', unlockAudio)
+  window.removeEventListener('keydown', unlockAudio)
+})
 
 function getResult(rank: number): DrawResult | undefined {
   return results.value.find((r) => r.prize_rank === rank)
