@@ -1,17 +1,24 @@
-import { Config } from "effect";
+import { Config, ManagedRuntime } from "effect";
 import { PgClient } from "@effect/sql-pg";
 
-// 1. Define the Config structure for the PgClient options
+// Config for the PgClient / connection pool
 const PgClientConfig = Config.all({
   host: Config.string("DATABASE_HOST"),
   port: Config.number("DATABASE_PORT").pipe(Config.withDefault(5432)),
   username: Config.string("DATABASE_USER"),
-  password: Config.redacted("DATABASE_PASSWORD"), // Keep password redacted as required by PgClientConfig
+  password: Config.redacted("DATABASE_PASSWORD"),
   database: Config.string("DATABASE_NAME"),
-  // Enable SSL/TLS if required by the provider (e.g., Render). Defaults to true.
   ssl: Config.boolean("DATABASE_SSL").pipe(Config.withDefault(true)),
+  // Pool tuning — prevents stale-connection timeouts under load
+  maxConnections: Config.succeed(5),           // keep total connections low (Render limit)
+  idleTimeoutMillis: Config.succeed(30_000),   // close idle connections after 30s (Render kills at 300s)
+  connectionTimeoutMillis: Config.succeed(10_000), // fail fast if pool exhausted
+  keepAlive: Config.succeed(true),             // TCP keepalive — detect dead connections early
 });
 
-// 2. Create the Live Layer for the Effect application using PgClient.layerConfig
-// PgClient.layerConfig connects the configured client and also provides the generic SqlClient
+// Layer — describes how to build the PgClient
 export const LiveDatabase = PgClient.layerConfig(PgClientConfig);
+
+// Shared runtime — built ONCE at startup, reused for every request.
+// Eliminates the "new connection per Effect.runPromise" bug.
+export const dbRuntime = ManagedRuntime.make(LiveDatabase);

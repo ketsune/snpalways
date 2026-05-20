@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { Effect } from 'effect';
 import { SqlClient } from '@effect/sql';
-import { LiveDatabase } from '../db';
+import { dbRuntime } from '../db';
 import { requireServiceKey, requireModToken } from '../lib/auth';
 
 // Mission Hunt routes — see llm-wiki/requirements/mission-hunt.md.
@@ -44,7 +44,7 @@ export const huntRoutes = new Elysia()
     const authErr = requireServiceKey(headers, set);
     if (authErr) return authErr;
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<Omit<MissionRow, 'description'> & { description: string | null }>`
@@ -53,7 +53,7 @@ export const huntRoutes = new Elysia()
             where active = true
             order by position asc, id asc
           `;
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       return { success: true, missions: rows };
     } catch (error) {
@@ -80,7 +80,7 @@ export const huntRoutes = new Elysia()
     }
 
     try {
-      const result = await Effect.runPromise(
+      const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
 
@@ -118,7 +118,7 @@ export const huntRoutes = new Elysia()
             createdAt: inserted[0]!.created_at,
             pointsAwarded: alreadyEarned ? 0 : missionPoints,
           };
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
 
       if (result.kind === 'mission_missing') {
@@ -151,7 +151,7 @@ export const huntRoutes = new Elysia()
     const since = typeof query.since === 'string' ? new Date(query.since) : null;
     const sinceValid = since && !Number.isNaN(since.getTime());
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           // Photos are visible to the mosaic only after FEED_DELAY_MS elapsed,
@@ -178,7 +178,7 @@ export const huntRoutes = new Elysia()
             order by created_at desc
             limit ${limit}
           `;
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       return {
         success: true,
@@ -205,7 +205,7 @@ export const huntRoutes = new Elysia()
       return { success: false, message: 'Invalid id' };
     }
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<{ id: number; mission_id: number; hunter_name: string; full_base64: string; approved: boolean; created_at: string }>`
@@ -213,7 +213,7 @@ export const huntRoutes = new Elysia()
             from hunt_photos
             where id = ${id} and approved = true
           `;
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       const row = rows[0];
       if (!row) {
@@ -240,7 +240,7 @@ export const huntRoutes = new Elysia()
     if (authErr) return authErr;
     const limit = Math.min(Math.max(Number(query.limit ?? 20) || 20, 1), 100);
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           // Score = sum of points across distinct missions the hunter completed
@@ -277,7 +277,7 @@ export const huntRoutes = new Elysia()
             order by sum(m.points) desc, count(*) desc, hln.hunter_name asc
             limit ${limit}
           `;
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       return {
         success: true,
@@ -303,7 +303,7 @@ export const huntRoutes = new Elysia()
       return { success: false, message: 'token query param required.' };
     }
     try {
-      const result = await Effect.runPromise(
+      const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const completed = yield* sql<{ mission_id: number; points: number }>`
@@ -313,7 +313,7 @@ export const huntRoutes = new Elysia()
             where p.hunter_token = ${token} and p.approved = true
           `;
           return completed;
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       const completedMissionIds = result.map((r) => r.mission_id);
       const totalPoints = result.reduce((sum, r) => sum + Number(r.points), 0);
@@ -331,7 +331,7 @@ export const huntRoutes = new Elysia()
     const authErr = requireModToken(headers, set);
     if (authErr) return authErr;
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<Omit<PhotoRow, 'full_base64'>>`
@@ -341,7 +341,7 @@ export const huntRoutes = new Elysia()
             order by created_at desc
             limit 500
           `;
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       return {
         success: true,
@@ -370,7 +370,7 @@ export const huntRoutes = new Elysia()
       return { success: false, message: 'Invalid id' };
     }
     try {
-      const result = await Effect.runPromise(
+      const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const rows = yield* sql<{ id: number; approved: boolean }>`
@@ -378,7 +378,7 @@ export const huntRoutes = new Elysia()
             returning id, approved
           `;
           return rows[0];
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       if (!result) {
         set.status = 404;
@@ -401,12 +401,12 @@ export const huntRoutes = new Elysia()
       return { success: false, message: 'Invalid id' };
     }
     try {
-      const result = await Effect.runPromise(
+      const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const rows = yield* sql<{ id: number }>`delete from hunt_photos where id = ${id} returning id`;
           return rows[0];
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       if (!result) {
         set.status = 404;
@@ -422,7 +422,7 @@ export const huntRoutes = new Elysia()
     const authErr = requireModToken(headers, set);
     if (authErr) return authErr;
     try {
-      const deleted = await Effect.runPromise(
+      const deleted = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const rows = yield* sql<{ count: string }>`
@@ -430,7 +430,7 @@ export const huntRoutes = new Elysia()
             select count(*)::text as count from d
           `;
           return Number(rows[0]?.count ?? 0);
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       return { success: true, deletedPhotoCount: deleted };
     } catch (error) {
@@ -446,7 +446,7 @@ export const huntRoutes = new Elysia()
     const authErr = requireModToken(headers, set);
     if (authErr) return authErr;
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<MissionRow>`
@@ -454,7 +454,7 @@ export const huntRoutes = new Elysia()
             from hunt_missions
             order by position asc, id asc
           `;
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       return { success: true, missions: rows };
     } catch (error) {
@@ -470,7 +470,7 @@ export const huntRoutes = new Elysia()
       return { success: false, message: 'Example thumbnail too large.' };
     }
     try {
-      const result = await Effect.runPromise(
+      const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           // If position is omitted, append at the end.
@@ -488,7 +488,7 @@ export const huntRoutes = new Elysia()
             returning id, position, title, description, example_thumb_base64, points, active, created_at
           `;
           return rows[0]!;
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       return { success: true, mission: result };
     } catch (error) {
@@ -518,7 +518,7 @@ export const huntRoutes = new Elysia()
       return { success: false, message: 'Example thumbnail too large.' };
     }
     try {
-      const result = await Effect.runPromise(
+      const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const rows = yield* sql<MissionRow>`
@@ -533,7 +533,7 @@ export const huntRoutes = new Elysia()
             returning id, position, title, description, example_thumb_base64, points, active, created_at
           `;
           return rows[0];
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       if (!result) {
         set.status = 404;
@@ -563,7 +563,7 @@ export const huntRoutes = new Elysia()
       return { success: false, message: 'Invalid id' };
     }
     try {
-      const result = await Effect.runPromise(
+      const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const photoCount = yield* sql<{ count: string }>`
@@ -571,7 +571,7 @@ export const huntRoutes = new Elysia()
           `;
           const rows = yield* sql<{ id: number }>`delete from hunt_missions where id = ${id} returning id`;
           return { row: rows[0], deletedPhotoCount: Number(photoCount[0]?.count ?? 0) };
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       if (!result.row) {
         set.status = 404;
@@ -595,7 +595,7 @@ export const huntRoutes = new Elysia()
       return { success: false, message: 'orderedIds must be a non-empty array.' };
     }
     try {
-      await Effect.runPromise(
+      await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           // Two-step rewrite to avoid hypothetical unique-constraint conflicts:
@@ -606,7 +606,7 @@ export const huntRoutes = new Elysia()
             const newPos = i + 1;
             yield* sql`update hunt_missions set position = ${newPos} where id = ${id}`;
           }
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       return { success: true, count: body.orderedIds.length };
     } catch (error) {
@@ -624,7 +624,7 @@ export const huntRoutes = new Elysia()
     const authErr = requireModToken(headers, set);
     if (authErr) return authErr;
     try {
-      const counts = await Effect.runPromise(
+      const counts = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const photos = yield* sql<{ count: string }>`
@@ -639,7 +639,7 @@ export const huntRoutes = new Elysia()
             deletedPhotoCount: Number(photos[0]?.count ?? 0),
             deletedMissionCount: Number(missions[0]?.count ?? 0),
           };
-        }).pipe(Effect.provide(LiveDatabase)),
+        }),
       );
       return { success: true, ...counts };
     } catch (error) {

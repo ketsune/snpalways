@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { Effect } from 'effect';
 import { SqlClient } from '@effect/sql';
-import { LiveDatabase } from '../db';
+import { dbRuntime } from '../db';
 import { requireServiceKey } from '../lib/auth';
 
 export const rsvpRoutes = new Elysia()
@@ -9,7 +9,7 @@ export const rsvpRoutes = new Elysia()
     const authErr = requireServiceKey(headers, set);
     if (authErr) return authErr;
     try {
-      const result = await Effect.runPromise(
+      const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const rows = yield* sql<{
@@ -20,7 +20,7 @@ export const rsvpRoutes = new Elysia()
             returning id, name, attending, guests, message, created_at
           `;
           return rows[0];
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, rsvp: result };
     } catch (error) {
@@ -39,13 +39,13 @@ export const rsvpRoutes = new Elysia()
     const authErr = requireServiceKey(headers, set);
     if (authErr) return authErr;
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<{
             id: number; name: string; attending: boolean; guests: number; message: string | null; created_at: string;
           }>`select id, name, attending, guests, message, created_at from rsvps order by created_at desc`;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, rsvps: rows };
     } catch (error) {

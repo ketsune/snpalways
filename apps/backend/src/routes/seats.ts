@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { Effect } from 'effect';
 import { SqlClient } from '@effect/sql';
-import { LiveDatabase } from '../db';
+import { dbRuntime } from '../db';
 import { requireModToken } from '../lib/auth';
 
 export const seatsRoutes = new Elysia()
@@ -11,7 +11,7 @@ export const seatsRoutes = new Elysia()
     const q = (query.q ?? '').trim();
     if (!q) return { success: true, seats: [] };
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<{ id: number; name: string; table_name: string }>`
@@ -21,7 +21,7 @@ export const seatsRoutes = new Elysia()
             ORDER BY name ASC
             LIMIT 20
           `;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, seats: rows };
     } catch {
@@ -35,13 +35,13 @@ export const seatsRoutes = new Elysia()
     const auth = requireModToken(headers, set);
     if (auth) return auth;
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<{ id: number; name: string; table_name: string }>`
             SELECT id, name, table_name FROM seats ORDER BY table_name ASC, name ASC
           `;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, seats: rows };
     } catch {
@@ -55,14 +55,14 @@ export const seatsRoutes = new Elysia()
     const auth = requireModToken(headers, set);
     if (auth) return auth;
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<{ id: number; name: string; table_name: string }>`
             INSERT INTO seats (name, table_name) VALUES (${body.name.trim()}, ${body.table_name.trim()})
             RETURNING id, name, table_name
           `;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, seat: rows[0] };
     } catch {
@@ -81,7 +81,7 @@ export const seatsRoutes = new Elysia()
     const auth = requireModToken(headers, set);
     if (auth) return auth;
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<{ id: number; name: string; table_name: string }>`
@@ -89,7 +89,7 @@ export const seatsRoutes = new Elysia()
             WHERE id = ${Number(params.id)}
             RETURNING id, name, table_name
           `;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       if (!rows.length) { set.status = 404; return { success: false, message: 'ไม่พบข้อมูล' }; }
       return { success: true, seat: rows[0] };
@@ -109,11 +109,11 @@ export const seatsRoutes = new Elysia()
     const auth = requireModToken(headers, set);
     if (auth) return auth;
     try {
-      await Effect.runPromise(
+      await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           yield* sql`DELETE FROM seats WHERE id = ${Number(params.id)}`;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true };
     } catch {
@@ -129,7 +129,7 @@ export const seatsRoutes = new Elysia()
     const rows = body.rows;
     if (!rows.length) { set.status = 400; return { success: false, message: 'ไม่มีข้อมูลที่จะนำเข้า' }; }
     try {
-      const inserted = await Effect.runPromise(
+      const inserted = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           yield* sql`DELETE FROM seats`;
@@ -142,7 +142,7 @@ export const seatsRoutes = new Elysia()
             if (r[0]) results.push(r[0]);
           }
           return results;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, count: inserted.length, seats: inserted };
     } catch (err) {
@@ -164,11 +164,11 @@ export const seatsRoutes = new Elysia()
     const auth = requireModToken(headers, set);
     if (auth) return auth;
     try {
-      await Effect.runPromise(
+      await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           yield* sql`DELETE FROM seats`;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true };
     } catch {

@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { Effect } from 'effect';
 import { SqlClient } from '@effect/sql';
-import { LiveDatabase } from '../db';
+import { dbRuntime } from '../db';
 import { requireServiceKey, requireModToken } from '../lib/auth';
 
 export const matchmakingRoutes = new Elysia()
@@ -13,7 +13,7 @@ export const matchmakingRoutes = new Elysia()
       return { success: false, message: 'รูปภาพมีขนาดใหญ่เกินไป กรุณาเลือกรูปที่เล็กกว่า' };
     }
     try {
-      const result = await Effect.runPromise(
+      const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const rows = yield* sql<{
@@ -25,7 +25,7 @@ export const matchmakingRoutes = new Elysia()
             returning id, submitter_name, friend_name, contact, bio, photo_base64, approved, created_at
           `;
           return rows[0];
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, submission: result };
     } catch (error) {
@@ -45,7 +45,7 @@ export const matchmakingRoutes = new Elysia()
     const authErr = requireServiceKey(headers, set);
     if (authErr) return authErr;
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<{
@@ -57,7 +57,7 @@ export const matchmakingRoutes = new Elysia()
             where approved = true
             order by created_at desc
           `;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, submissions: rows };
     } catch (error) {
@@ -69,7 +69,7 @@ export const matchmakingRoutes = new Elysia()
     const authErr = requireModToken(headers, set);
     if (authErr) return authErr;
     try {
-      const rows = await Effect.runPromise(
+      const rows = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           return yield* sql<{
@@ -80,7 +80,7 @@ export const matchmakingRoutes = new Elysia()
             from matchmaking_submissions
             order by created_at desc
           `;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true, submissions: rows };
     } catch (error) {
@@ -97,7 +97,7 @@ export const matchmakingRoutes = new Elysia()
       return { success: false, message: 'ID ไม่ถูกต้อง' };
     }
     try {
-      const result = await Effect.runPromise(
+      const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const rows = yield* sql<{ id: number; approved: boolean }>`
@@ -107,7 +107,7 @@ export const matchmakingRoutes = new Elysia()
             returning id, approved
           `;
           return rows[0];
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       if (!result) {
         set.status = 404;
@@ -125,11 +125,11 @@ export const matchmakingRoutes = new Elysia()
     const authErr = requireModToken(headers, set);
     if (authErr) return authErr;
     try {
-      await Effect.runPromise(
+      await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           yield* sql`delete from matchmaking_submissions`;
-        }).pipe(Effect.provide(LiveDatabase))
+        })
       );
       return { success: true };
     } catch (error) {
