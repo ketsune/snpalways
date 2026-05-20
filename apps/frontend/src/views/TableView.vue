@@ -12,7 +12,7 @@ const searched = ref(false)
 const mapOpen = ref(false)
 
 const SUGGEST_GROUPS = [
-  'ญาติพ่ออู๊ด', 'ญาติแม่ปอง', 'MU RX13', 'MU RX13/TU824', 'Organon',
+  'ญาติพ่ออู๊ด', 'ญาติแม่ปอง', 'MU RX13', 'TU824', 'Organon',
   'เพื่อนพ่ออู๊ด', 'SET', 'SG Band', 'SG', 'CSCU', 'สายรหัส',
   'ญาติแม่ลัก', 'เพื่อนพ่อเกรียง', 'ญาติพ่อเกรียง', 'korkor',
   'DM / เพื่อนเจ้าสาว', 'DM', 'SCI OFFICE', 'SCI FACTORY', 'MS CU',
@@ -55,7 +55,7 @@ async function search() {
 <template>
   <main class="min-h-screen bg-off-white text-gray-800">
     <section class="mx-auto max-w-2xl px-4 py-12 sm:py-16">
-      <h1 class="font-cookie text-5xl sm:text-6xl text-rose-600">ค้นหาโต๊ะของคุณ</h1>
+      <h1 class="font-cookie text-3xl sm:text-6xl text-rose-600">ค้นหาโต๊ะของคุณ</h1>
       <p class="mt-3 text-gray-600">พิมพ์ชื่อหรือเลือกกลุ่มเพื่อดูหมายเลขโต๊ะ</p>
 
       <!-- Search input -->
@@ -65,7 +65,7 @@ async function search() {
           @input="onInput"
           @keydown.enter.prevent="search"
           type="text"
-          placeholder="ชื่อ"
+          placeholder="กรุณากรอกชื่อเล่นหรือชื่อที่พวกเราเรียกค่ะ/ครับ"
           class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm placeholder:text-gray-400 focus:border-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
         />
       </div>
@@ -99,7 +99,6 @@ async function search() {
         >
           <p class="text-gray-800 font-medium" style="font-family: 'Sarabun', sans-serif">{{ seat.name }}</p>
           <div class="text-right">
-            <p class="text-xs text-gray-400 uppercase tracking-widest">โต๊ะ</p>
             <p class="text-2xl font-bold text-rose-600 leading-none" style="font-family: 'Sarabun', sans-serif">{{ seat.table_name }}</p>
           </div>
         </div>
