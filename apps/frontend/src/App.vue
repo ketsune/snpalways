@@ -126,7 +126,7 @@ watch(
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                d="M3 10h18M3 6h18M3 14h18M3 18h18"
+                d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"
               />
             </svg>
             <span>หาโต๊ะ</span>
@@ -151,28 +151,6 @@ watch(
             </svg>
             <span>Lucky Draw</span>
           </RouterLink>
-          <a
-            class="flex flex-col items-center gap-0.5 text-gray-600 hover:text-rose-600 transition-colors"
-            href="https://forms.gle/e1WGCZBAHVRLV5cA7"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-              />
-            </svg>
-            <span>ฟอร์มลงทะเบียน</span>
-          </a>
         </nav>
 
         <!-- Mobile hamburger button -->
@@ -292,7 +270,7 @@ watch(
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-              <!-- Table -->
+              <!-- Table (search) -->
               <svg
                 v-if="item.icon === 'table'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -305,7 +283,7 @@ watch(
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  d="M3 10h18M3 6h18M3 14h18M3 18h18"
+                  d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"
                 />
               </svg>
               <!-- Gift -->
@@ -327,29 +305,6 @@ watch(
               <span class="text-sm font-medium">{{ item.label }}</span>
             </RouterLink>
 
-            <!-- RSVP external -->
-            <a
-              href="https://forms.gle/e1WGCZBAHVRLV5cA7"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center gap-3 px-6 py-3 text-gray-700 hover:bg-rose-50 hover:text-rose-600 transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                />
-              </svg>
-              <span class="text-sm font-medium">ฟอร์มลงทะเบียน</span>
-            </a>
           </nav>
         </div>
       </Transition>
