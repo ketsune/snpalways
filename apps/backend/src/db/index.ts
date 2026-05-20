@@ -10,7 +10,7 @@ const PgClientConfig = Config.all({
   database: Config.string("DATABASE_NAME"),
   ssl: Config.boolean("DATABASE_SSL").pipe(Config.withDefault(true)),
   // Pool tuning — prevents stale-connection timeouts under load
-  maxConnections: Config.succeed(5),           // keep total connections low (Render limit)
+  maxConnections: Config.succeed(10),          // enough for ~20 concurrent requests with buffer
   idleTimeoutMillis: Config.succeed(30_000),   // close idle connections after 30s (Render kills at 300s)
   connectionTimeoutMillis: Config.succeed(10_000), // fail fast if pool exhausted
   keepAlive: Config.succeed(true),             // TCP keepalive — detect dead connections early
