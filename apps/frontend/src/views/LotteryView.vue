@@ -9,6 +9,17 @@ const loading = ref(false)
 const success = ref<string | null>(null)
 const error = ref<string | null>(null)
 
+const DEVICE_TOKEN_KEY = 'lottery_device_token'
+
+function getOrCreateDeviceToken(): string {
+  let token = localStorage.getItem(DEVICE_TOKEN_KEY)
+  if (!token) {
+    token = crypto.randomUUID()
+    localStorage.setItem(DEVICE_TOKEN_KEY, token)
+  }
+  return token
+}
+
 const addDigit = (digit: number) => {
   if (number.value.length < 6 && !number.value.includes(digit.toString())) {
     number.value += digit.toString()
@@ -36,7 +47,12 @@ async function submit() {
     const res = await apiFetch('/api/lottery', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name.value.trim(), number: number.value.trim(), table_no: tableNo.value.trim() || undefined }),
+      body: JSON.stringify({
+        name: name.value.trim(),
+        number: number.value.trim(),
+        table_no: tableNo.value.trim() || undefined,
+        device_token: getOrCreateDeviceToken(),
+      }),
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok || !data?.success) throw new Error(data?.message || 'ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง')
