@@ -1,0 +1,1 @@
+-- Hunt feature migration (feature removed; placeholder to satisfy migration journal)
