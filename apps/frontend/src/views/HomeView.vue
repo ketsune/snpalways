@@ -69,14 +69,11 @@ onUnmounted(() => {
         <p class="mt-4 text-base sm:text-lg">Saturday, May 30, 2026 · 13:00</p>
         <p class="text-base sm:text-lg">Ray Venue, Nonthaburi</p>
         <div class="mt-8 flex items-center justify-center gap-3">
-          <a
-            href="https://forms.gle/e1WGCZBAHVRLV5cA7"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center rounded-full bg-rose-600 px-4 py-1 md:px-6 md:py-3 text-white shadow hover:bg-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+          <span
+            class="inline-flex items-center rounded-full bg-gray-300 px-4 py-1 md:px-6 md:py-3 text-white cursor-not-allowed select-none"
           >
             RSVP
-          </a>
+          </span>
           <a
             href="#details"
             class="inline-flex items-center rounded-full border border-rose-200 px-4 py-1 md:px-6 md:py-3 text-rose-700 bg-rose-50 hover:bg-rose-200"
