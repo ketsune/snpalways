@@ -55,7 +55,7 @@ async function submit() {
 <template>
   <main class="min-h-screen bg-off-white text-gray-800">
     <section class="mx-auto max-w-2xl px-4 py-12 sm:py-16">
-      <h1 class="font-cookie text-5xl sm:text-4xl text-rose-600">สลากกินไม่แบ่ง กินอยู่คนเดียว</h1>
+      <h1 class="font-cookie text-3xl sm:text-6xl text-rose-600">สลากกินไม่แบ่ง กินอยู่คนเดียว</h1>
       <p class="mt-3 text-gray-600">เลือกหมายเลข 6 หลักนำโชคของคุณ และร่วมลุ้นรับรางวัลในงาน!</p>
       <div class="mt-1 space-y-1">
         <p class="text-sm text-rose-500 font-medium">หมายเลขต้องไม่ซ้ำกับคนอื่น ตรวจสอบหมายเลขที่ถูกใช้แล้วด้านล่าง</p>
