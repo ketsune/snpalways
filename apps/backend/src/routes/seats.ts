@@ -19,7 +19,7 @@ export const seatsRoutes = new Elysia()
             FROM seats
             WHERE name ILIKE ${'%' + q + '%'}
             ORDER BY name ASC
-            LIMIT 20
+            LIMIT 40
           `;
         })
       );
