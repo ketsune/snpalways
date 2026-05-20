@@ -49,36 +49,6 @@ export const lotteryDraws = pgTable('lottery_draws', {
 export type InsertLotteryDraw = typeof lotteryDraws.$inferInsert;
 export type SelectLotteryDraw = typeof lotteryDraws.$inferSelect;
 
-// Mission Hunt — photo scavenger hunt run during the reception. See
-// llm-wiki/requirements/mission-hunt.md for the full spec.
-export const huntMissions = pgTable('hunt_missions', {
-  id: serial('id').primaryKey(),
-  position: integer('position').notNull(),
-  title: text('title').notNull(),
-  description: text('description'),
-  exampleThumbBase64: text('example_thumb_base64'),
-  points: integer('points').notNull().default(10),
-  active: boolean('active').notNull().default(true),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
-
-export type InsertHuntMission = typeof huntMissions.$inferInsert;
-export type SelectHuntMission = typeof huntMissions.$inferSelect;
-
-export const huntPhotos = pgTable('hunt_photos', {
-  id: serial('id').primaryKey(),
-  missionId: integer('mission_id').notNull().references(() => huntMissions.id, { onDelete: 'cascade' }),
-  hunterToken: text('hunter_token').notNull(),
-  hunterName: text('hunter_name').notNull(),
-  hunterTable: text('hunter_table'),
-  thumbBase64: text('thumb_base64').notNull(),
-  fullBase64: text('full_base64').notNull(),
-  approved: boolean('approved').notNull().default(true),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
-
-export type InsertHuntPhoto = typeof huntPhotos.$inferInsert;
-export type SelectHuntPhoto = typeof huntPhotos.$inferSelect;
 
 export const seats = pgTable('seats', {
   id: serial('id').primaryKey(),

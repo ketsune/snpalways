@@ -7,7 +7,6 @@ import { dbRuntime } from './db';
 import { rsvpRoutes } from './routes/rsvp';
 import { matchmakingRoutes } from './routes/matchmaking';
 import { lotteryRoutes } from './routes/lottery';
-import { huntRoutes } from './routes/hunt';
 import { seatsRoutes } from './routes/seats';
 
 const dbHealthCheck = Effect.gen(function* () {
@@ -36,7 +35,6 @@ const app = new Elysia()
   .use(rsvpRoutes)
   .use(matchmakingRoutes)
   .use(lotteryRoutes)
-  .use(huntRoutes)
   .use(seatsRoutes)
   .listen(3000);
 
