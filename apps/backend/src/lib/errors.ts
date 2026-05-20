@@ -8,3 +8,13 @@ export function isUniqueViolation(error: unknown): boolean {
   const text = inspect(error, { depth: 8, getters: true });
   return /23505|unique constraint|duplicate key/i.test(text);
 }
+
+// Returns the violated constraint/index name, or null if not a unique violation.
+export function getUniqueConstraintName(error: unknown): string | null {
+  if (!isUniqueViolation(error)) return null;
+  const text = inspect(error, { depth: 8, getters: true });
+  const match = text.match(/constraint["\s]+([a-z0-9_]+)/i)
+    ?? text.match(/unique["\s]+constraint["\s"]+([a-z0-9_]+)/i)
+    ?? text.match(/index["\s"]+([a-z0-9_]+)/i);
+  return match?.[1] ?? null;
+}

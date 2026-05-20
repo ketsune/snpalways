@@ -29,9 +29,10 @@ export type SelectMatchmakingSubmission = typeof matchmakingSubmissions.$inferSe
 
 export const lotteryEntries = pgTable('lottery_entries', {
   id: serial('id').primaryKey(),
-  name: text('name').notNull(),
+  name: text('name').notNull().unique(),
   number: text('number').notNull().unique(),
   tableNo: text('table_no'),
+  deviceToken: text('device_token'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 

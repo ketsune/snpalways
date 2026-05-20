@@ -3,7 +3,7 @@ import { Effect } from 'effect';
 import { SqlClient } from '@effect/sql';
 import { dbRuntime } from '../db';
 import { requireServiceKey, requireModToken } from '../lib/auth';
-import { isUniqueViolation } from '../lib/errors';
+import { isUniqueViolation, getUniqueConstraintName } from '../lib/errors';
 
 const PRIZE_DIGITS: Record<number, number> = { 1: 6, 2: 3, 3: 3 };
 
@@ -22,13 +22,14 @@ export const lotteryRoutes = new Elysia()
       return { success: false, message: 'หมายเลขต้องมี 6 หลักเท่านั้น' };
     }
     const tableNo = body.table_no?.trim() || null;
+    const deviceToken = body.device_token?.trim() || null;
     try {
       const result = await dbRuntime.runPromise(
         Effect.gen(function* () {
           const sql = yield* SqlClient.SqlClient;
           const rows = yield* sql<{ id: number; name: string; number: string; table_no: string | null; created_at: string }>`
-            insert into lottery_entries (name, number, table_no)
-            values (${body.name.trim()}, ${num}, ${tableNo})
+            insert into lottery_entries (name, number, table_no, device_token)
+            values (${body.name.trim()}, ${num}, ${tableNo}, ${deviceToken})
             returning id, name, number, table_no, created_at
           `;
           return rows[0];
@@ -38,6 +39,13 @@ export const lotteryRoutes = new Elysia()
     } catch (error: unknown) {
       if (isUniqueViolation(error)) {
         set.status = 409;
+        const constraint = getUniqueConstraintName(error) ?? '';
+        if (constraint.includes('device_token')) {
+          return { success: false, message: 'คุณได้ส่งหมายเลขไปแล้ว ไม่สามารถส่งซ้ำได้' };
+        }
+        if (constraint.includes('name')) {
+          return { success: false, message: 'ชื่อนี้ถูกใช้ไปแล้ว กรุณาตรวจสอบชื่อของคุณ' };
+        }
         return { success: false, message: 'หมายเลขนี้ถูกใช้ไปแล้ว กรุณาเลือกหมายเลขอื่น' };
       }
       console.error('Failed to save lottery entry', error);
@@ -48,6 +56,7 @@ export const lotteryRoutes = new Elysia()
       name: t.String({ minLength: 1, maxLength: 120 }),
       number: t.String({ minLength: 1, maxLength: 6 }),
       table_no: t.Optional(t.String({ maxLength: 20 })),
+      device_token: t.Optional(t.String({ maxLength: 64 })),
     }),
   })
   .get('/api/lottery/numbers', async ({ headers, set }) => {
